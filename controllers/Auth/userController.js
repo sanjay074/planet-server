@@ -1,43 +1,201 @@
+const Joi = require('joi');
 const user = require("../../models/user")
-
+const mongoose = require("mongoose");
+//create profile
 async function createProfileController(req,res){
-try{
-    //geting data from body
-    const {mobileNumber,fullName,email,gender,birthday,alternateNumber}=req.body
-    //validation
-    if(!mobileNumber||!fullName ||!email){
-             return res.status(400).send({
-            success:false,
-            message:"Please fill all  the fields"
-        })
-    }
-    //check the mobile number is unique or not 
-    const numberExist = await user.findOne({mobileNumber})
-    if(numberExist){
-        return res.status(401).send({
-            success:false,
-            message:"Number is already available"
-        })
-    }
-    //send data to the databse 
-    const data =await user({mobileNumber,fullName,email,gender,birthday,alternateNumber}).save()
-    
-    //succes resposne
-    return res.status(200).send({
-        success:true,
-        message:"user register successfully",
-        data
-    })
+   try{
+ // Define Joi schema
+ const schema = Joi.object({
+    mobileNumber: Joi.string().required(),
+    fullName: Joi.string().required(),
+    email: Joi.string().email().required(),
+    gender: Joi.string().valid('male', 'female', 'other').optional(),
+    birthday: Joi.date().optional(),
+    alternateNumber: Joi.string().optional()
+  });
+
+  // Validate the request body against the schema
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).send({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+
+  const { mobileNumber, fullName, email, gender, birthday, alternateNumber } = req.body;
+
+  // Check if the mobile number is unique
+  const numberExist = await user.findOne({ mobileNumber });
+  if (numberExist) {
+    return res.status(401).send({
+      success: false,
+      message: "Number is already available"
+    });
+  }
+
+  // Save the data to the database
+  const data = await user({
+    mobileNumber,
+    fullName,
+    email,
+    gender,
+    birthday,
+    alternateNumber
+  }).save();
+
+  // Successful response
+  return res.status(200).send({
+    success: true,
+    message: "User registered successfully",
+    data
+  });
+} catch (error) {
+  return res.status(403).send({
+    success: false,
+    message: "Error in Create Profile",
+    error
+  });
 }
-catch(error){
+}
+
+
+
+
+//updateProfile
+
+async function  updateProfileController(req,res){
+ try{
+     //geting data from body
+     const {mobileNumber,fullName,email,gender,birthday,alternateNumber}=req.body
+       // req id from params
+    const  id = req.params.id;
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(400).json({message:"Invalid address Id"})
+    }
+     //updating our data 
+     const updateData = await user.findByIdAndUpdate(id,
+        {mobileNumber,fullName,email,gender,birthday,alternateNumber},
+        {new:true}) 
+
+        if(!updateData){
+          return res.status(404).send({
+              success:"false",
+              message:"data is not is not available"
+          })
+      }
+     //return response
+     return res.status(200).send({
+        success:true,
+        message:"data updated successfully",
+        updateData
+     })
+
+
+
+ }catch(error){
         return res.status(403).send({
         success:false,
-        message:"Error in  Create Profile",
+        message:"Error in  update Profile",
         error
     })
+
+
+ }
+}
+
+//delete profile controller
+async function  deleteProfileController(req,res){
+    try{
+    // req id from params
+    const  id = req.params.id;
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(400).json({message:"Invalid address Id"})
+    }
+
+        const deleteProfile=await user.findByIdAndDelete(id)
+
+        if(!deleteProfile){
+          return res.status(404).send({
+              success:"false",
+              message:"data  is not available"
+          })
+      }
+         //return response
+        return res.status(200).send({
+        success:true,
+        message:"data deleted successfully",
+     })
+    }catch(error){
+            return res.status(403).send({
+            success:false,
+            message:"Error in  update Profile",
+            error
+            })
+    }
+}
+//get all data
+async function getAllProfileController(req,res){
+    try{
+        const allProfile =await user.find({})
+        //return response
+        return res.status(200).send({
+            success:true,
+            message:"here is your data",
+            allProfile
+        }) 
+
+    }catch(error){
+            return res.status(403).send({
+            success:false,
+            message:"Error in getting the all  Profile",
+            error
+            })
+
+    }
+}
+//get single profile data
+async function  getSingleProfileController(req,res){
+try{
+       // req id from params
+      const  id = req.params.id;
+      
+      if(!mongoose.Types.ObjectId.isValid(id)){
+          return res.status(400).json({message:"Invalid Profile Id"})
+      }
+
+    const myProfile =await user.findById(id)
+
+    if(!myProfile){
+      return res.status(404).send({
+          success:"false",
+          message:"data is not available"
+      })
+  }
+
+    //return resposne
+        return res.status(200).send({
+        success:true,
+        message:"Here is your  data",
+        myProfile
+    })
+
+}catch(error){
+        return res.status(403).send({
+        success:false,
+        message:"Error in getting the single  Profile",
+        error
+        })
 }
 }
 
+
+
 module.exports = {
-    createProfileController
+   createProfileController,
+   updateProfileController,
+   deleteProfileController,
+   getAllProfileController,
+   getSingleProfileController
+
 }
