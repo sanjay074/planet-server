@@ -38,12 +38,32 @@ async function contactForm (req, res)  {
       data: savedContact
     });
   } catch (error) {
-    return res.status(500).send({
+      return res.status(500).send({
       success: false,
       message: "Error creating contact",
       error: error.message
     });
   }
 };
+const getAllData = async(req,res)=>{
+  try{
+    const allData =await Contact.find({})
+    
+    return res.status(200).send({
+      success:true,
+      message:"your all data",
+      allData
 
-module.exports = {contactForm};
+    })
+  }catch(error){
+      return res.status(500).send({
+      success: false,
+      message: "Error in getting data",
+      error: error.message
+    });
+
+  }
+}
+
+
+module.exports = {contactForm,getAllData};

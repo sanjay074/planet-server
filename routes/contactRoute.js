@@ -1,8 +1,9 @@
 const express =require("express")
-const { contactForm } = require("../controllers/contactController")
+const { contactForm, getAllData } = require("../controllers/contactController")
 const contactRoute =express.Router()
 
 contactRoute.post('/',contactForm)
+contactRoute.get('/',getAllData)
 
 
 
