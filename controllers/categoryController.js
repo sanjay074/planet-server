@@ -1,6 +1,7 @@
 const Category = require("../models/Category");
 const { categoryValidationSchema } = require("../validations/validation");
 const mongoose = require("mongoose");
+
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 async function createCategory(req, res) {
