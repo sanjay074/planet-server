@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const addressSchema = new mongoose.Schema({
+const addressSchema =  mongoose.Schema({
   name: {
     type: String,
     trim: true,
@@ -58,4 +58,4 @@ const addressSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const Address = mongoose.model('Address', addressSchema);
-module.exports = Address;
+module.exports = Address

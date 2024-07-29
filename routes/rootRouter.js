@@ -7,7 +7,8 @@ const adminRouter =require("./adminRoute");
 const userRouter = require("./ProfileRoute");
 const contactRoute = require("./contactRoute");
 const addressRoute = require("./addressRoute");
-const cartRoute =require("./cartRoute")
+const cartRoute =require("./cartRoute");
+const orderRoute =require("./orderRoute");
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use("/user",userRouter);
 router.use("/contact",contactRoute)
 router.use("/address",addressRoute)
 router.use("/cart",cartRoute)
+router.use("/order",orderRoute)
 
 module.exports = router;
