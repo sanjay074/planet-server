@@ -26,7 +26,8 @@ async function requireSignIn (req,res,next){
         }
 
         // Attach decoded data to req.user
-        req.user = decode;
+        req.userId = decode.userId;
+        
 
      next()        
     }catch(error){
@@ -57,9 +58,26 @@ async function isAdminMd(req,res,next){
 
     }
 }
+//auth middleware
+
+const authMiddleware = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]; // Assumes Bearer token
+    if (!token) {
+      return res.status(401).send({ message: 'Authorization token is required' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.userId = decoded.id;
+      next();
+    } catch (error) {
+      return res.status(401).send({ message: 'Invalid token' });
+    }
+  };
 
 
 module.exports ={
     requireSignIn,
-    isAdminMd
+    isAdminMd,
+    authMiddleware
 }

@@ -1,6 +1,7 @@
 const Joi = require('joi');
-const user = require("../../models/user")
+
 const mongoose = require("mongoose");
+const Profile = require('../../models/Profile');
 //create profile
 async function createProfileController(req,res){
    try{
@@ -26,7 +27,7 @@ async function createProfileController(req,res){
   const { mobileNumber, fullName, email, gender, birthday, alternateNumber } = req.body;
 
   // Check if the mobile number is unique
-  const numberExist = await user.findOne({ mobileNumber });
+  const numberExist = await Profile.findOne({ mobileNumber });
   if (numberExist) {
     return res.status(401).send({
       success: false,
@@ -35,7 +36,7 @@ async function createProfileController(req,res){
   }
 
   // Save the data to the database
-  const data = await user({
+  const data = await Profile({
     mobileNumber,
     fullName,
     email,
@@ -74,7 +75,7 @@ async function  updateProfileController(req,res){
         return res.status(400).json({message:"Invalid address Id"})
     }
      //updating our data 
-     const updateData = await user.findByIdAndUpdate(id,
+     const updateData = await Profile.findByIdAndUpdate(id,
         {mobileNumber,fullName,email,gender,birthday,alternateNumber},
         {new:true}) 
 
@@ -113,7 +114,7 @@ async function  deleteProfileController(req,res){
         return res.status(400).json({message:"Invalid address Id"})
     }
 
-        const deleteProfile=await user.findByIdAndDelete(id)
+        const deleteProfile=await Profile.findByIdAndDelete(id)
 
         if(!deleteProfile){
           return res.status(404).send({
@@ -137,7 +138,7 @@ async function  deleteProfileController(req,res){
 //get all data
 async function getAllProfileController(req,res){
     try{
-        const allProfile =await user.find({})
+        const allProfile =await Profile.find({})
         //return response
         return res.status(200).send({
             success:true,
@@ -164,7 +165,7 @@ try{
           return res.status(400).json({message:"Invalid Profile Id"})
       }
 
-    const myProfile =await user.findById(id)
+    const myProfile =await Profile.findById(id)
 
     if(!myProfile){
       return res.status(404).send({

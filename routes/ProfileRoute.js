@@ -1,5 +1,5 @@
 const express = require("express");
-const { createProfileController, updateProfileController, deleteProfileController, getAllProfileController, getSingleProfileController } = require("../controllers/Auth/userController");
+const { createProfileController, updateProfileController, deleteProfileController, getAllProfileController, getSingleProfileController } = require("../controllers/Auth/profileController");
 
 const userRouter =express.Router()
     userRouter

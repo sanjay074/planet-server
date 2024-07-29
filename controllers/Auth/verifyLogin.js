@@ -48,7 +48,7 @@ exports.verifyOTP = async (req, res) => {
           });
           if (isAlreadyRegistered) {
             const _id = isAlreadyRegistered._id.toString();
-            const token = jwt.sign({ id: _id }, process.env.JWT_SECRET, {
+            const token = jwt.sign({ id: _id, }, process.env.JWT_SECRET, {
               expiresIn: "30d",
             });
             return res.status(200).send({
