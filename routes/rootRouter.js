@@ -9,6 +9,8 @@ const contactRoute = require("./contactRoute");
 const addressRoute = require("./addressRoute");
 const cartRoute =require("./cartRoute");
 const orderRoute =require("./orderRoute");
+const returnOrder = require("../models/returnOrder");
+const returnRoute = require("./returnRoute");
 
 const router = express.Router();
 
@@ -22,5 +24,6 @@ router.use("/contact",contactRoute)
 router.use("/address",addressRoute)
 router.use("/cart",cartRoute)
 router.use("/order",orderRoute)
+router.use("/return",returnRoute)
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const express =require("express")
-const { createOrder, getAllOrder, getmyOrder } = require("../controllers/orderController")
+const { createOrder, getAllOrder, getmyOrder, updateOrder } = require("../controllers/orderController")
 const { authMiddleware,isAdminMd} = require("../middleware/authMiddle")
 
 const orderRoute = express.Router()
@@ -9,6 +9,7 @@ orderRoute.post("/createOrder",authMiddleware,createOrder)
 orderRoute.get("/getAllorder",authMiddleware,isAdminMd,getAllOrder)
 //user all order 
 orderRoute.get("/getMyOrder",authMiddleware,getmyOrder)
+orderRoute.put("/updateOrder/:id",authMiddleware,isAdminMd,updateOrder)
 
 
 
