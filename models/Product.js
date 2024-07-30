@@ -50,7 +50,7 @@ const productSchema = mongoose.Schema(
       required: [true, "Product discount price is required"],
       min: 0,
     },
-    basePrice: {
+    basePrice:{
       type: Number,
       required: [true, "Product base price is required"],
       min: 0,
