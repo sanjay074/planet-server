@@ -6,7 +6,7 @@ const cartSchema =new mongoose.Schema({
         required:true
     },
     cartItems:[{
-        productId:{
+            productId:{
             type:mongoose.Schema.Types.ObjectId,
             ref:'Product',
             required:true
@@ -22,5 +22,7 @@ totalPrice:{
      type:Number
 }
 },{timestamps:true})
-const Cart =mongoose.model("Cart",cartSchema)
-module.exports =Cart 
+
+
+module.exports = mongoose.model("Cart",cartSchema)
+ 

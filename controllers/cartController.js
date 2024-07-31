@@ -2,17 +2,15 @@ const Product = require('../models/Product');
 const Cart = require('../models/Cart'); 
 const mongoose = require("mongoose");
 
-
-
 const addToCart = async (req, res) => {
-  try {
+    try {
     const userId = req.userId;
     const productsToAdd = req.body.products;
 
     if (!Array.isArray(productsToAdd) || productsToAdd.length === 0) {
       return res.status(400).send({
         success: false,
-        message: "Invalid products array"
+        message: "Invalid products array",
       });
     }
 
@@ -22,6 +20,7 @@ const addToCart = async (req, res) => {
       cart = new Cart({ userId, cartItems: [] });
     }
 
+    
     // Iterate over the products to add them to the cart
     for (const productData of productsToAdd) {
       const { productId, quantity } = productData;
@@ -30,16 +29,17 @@ const addToCart = async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(productId)) {
         return res.status(400).send({
           success: false,
-          message: `Invalid product Id: ${productId}`
+          message: `Invalid product Id: ${productId}`,
         });
       }
 
+    
       // Find the product
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).send({
           success: false,
-          message: `Product not available: ${productId}`
+          message: `Product not available: ${productId}`,
         });
       }
 
@@ -47,13 +47,16 @@ const addToCart = async (req, res) => {
       if (product.quantity < quantity) {
         return res.status(400).send({
           success: false,
-          message: `Stock not available for product: ${productId}`
+          message: `Stock not available for product: ${productId}`,
         });
       }
 
+    
       // Check if the product is already in the cart
-      const itemIndex = cart.cartItems.findIndex(item =>
-         item.productId.toString() === productId);
+      const itemIndex = cart.cartItems.findIndex(
+        (item) => item.productId.toString() === productId
+      );
+
       if (itemIndex > -1) {
         cart.cartItems[itemIndex].quantity += quantity;
       } else {
@@ -61,31 +64,43 @@ const addToCart = async (req, res) => {
       }
     }
 
+    
     // Calculate the total price of the cart
     let totalPrice = 0;
     for (const item of cart.cartItems) {
       const product = await Product.findById(item.productId);
+      if (!product) {
+        return res.status(404).send({
+          success: false,
+          message: `Product not available: ${item.productId}`,
+        });
+      }
       totalPrice += product.basePrice * item.quantity;
     }
     cart.totalPrice = totalPrice;
 
+    
     // Save the updated cart
     await cart.save();
 
-    res.status(200).json({
+      res.status(200).json({
       success: true,
       message: "Items added to cart",
-      
+      cart,
     });
-
   } catch (error) {
-    console.error("Error in adding to the cart:", error);
-    res.status(500).send({
+      console.error("Error in adding to the cart:", error);
+      res.status(500).send({
       success: false,
       message: "Internal server error",
+      error: error.message,
     });
   }
 };
+
+
+
+
 
 //get the cart 
 const getcart =async(req,res)=>{
@@ -120,7 +135,9 @@ const getcart =async(req,res)=>{
             return res.status(200).json({
             success:true,
             message:"Here is your all data",
-            alldata    
+            total:alldata.length,
+            alldata 
+
         }) 
 
            }catch(error){

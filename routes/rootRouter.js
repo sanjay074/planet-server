@@ -11,6 +11,7 @@ const cartRoute =require("./cartRoute");
 const orderRoute =require("./orderRoute");
 const returnOrder = require("../models/returnOrder");
 const returnRoute = require("./returnRoute");
+const whislistRoute = require("./whislistRoute");
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.use("/address",addressRoute)
 router.use("/cart",cartRoute)
 router.use("/order",orderRoute)
 router.use("/return",returnRoute)
+router.use("/whislist",whislistRoute)
 
 module.exports = router;
