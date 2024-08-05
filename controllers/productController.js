@@ -87,6 +87,8 @@ async function getProduct(req, res) {
       sortOrder = "asc",
       page = 1,
       limit = 10,
+      minPrice,
+      maxPrice,
     } = req.query;
 
     if (isNaN(page) || page <= 0) {
@@ -125,7 +127,7 @@ async function getProduct(req, res) {
         .status(404)
         .json({ success: false, message: "SubCategory not found" });
     }
-    if (brandDoc && !brandDoc) {
+    if (brand && !brandDoc) {
       return res
         .status(404)
         .json({ success: false, message: "Brand not found" });
@@ -135,11 +137,25 @@ async function getProduct(req, res) {
     if (subCategoryDoc) filter.subCategory = subCategoryDoc._id;
     if (brandDoc) filter.brand = brandDoc._id;
     if (size) filter.size = size;
+    if (minPrice && !isNaN(minPrice))
+      filter.finalPrice = { $gte: Number(minPrice) };
+    if (maxPrice && !isNaN(maxPrice))
+      filter.finalPrice = { ...filter.finalPrice, $lte: Number(maxPrice) };
 
     const sortOptions = {};
     if (sortBy) sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
 
     const totalProducts = await Product.countDocuments(filter).exec();
+
+    if (totalProducts === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        status: "Fail",
+        message: "No products found in the specified price range",
+      });
+    }
+
     const totalPages = Math.ceil(totalProducts / limit);
 
     if (page > totalPages) {
@@ -182,7 +198,7 @@ async function getProduct(req, res) {
   } catch (error) {
     res
       .status(500)
-      .json({ success: false, message: "server error", error: error.message });
+      .json({ success: false, message: "Server error", error: error.message });
   }
 }
 
