@@ -12,8 +12,8 @@ const orderRoute =require("./orderRoute");
 const returnOrder = require("../models/returnOrder");
 const returnRoute = require("./returnRoute");
 const whislistRoute = require("./whislistRoute");
-const { ratingAndReviewRoute } = require("./ratingAndReviewRoute");
-const { searchRoute } = require("./searchRoute");
+const  ratingAndReviewRoute  = require("./ratingAndReviewRoute");
+const  searchRoute  = require("./searchRoute");
 
 const router = express.Router();
 

@@ -7,5 +7,5 @@ searchRoute.get("/getLatestItems",latestProductController)
 
 
 
-module.exports ={searchRoute}
+module.exports =searchRoute
 

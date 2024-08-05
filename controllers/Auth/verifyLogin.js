@@ -1,11 +1,12 @@
 const axios =require("axios");
 const user = require("../../models/user");
 const jwt = require('jsonwebtoken');
+
 exports.verifyOTP = async (req, res) => {
     try {
       if (req.body.phone === "9999999999" || req.body.phone === "8888888888") {
         const isAlreadyRegistered = await user.findOne({
-          phone: req.body.phone,
+          phone: req.body.phone
         });
         if (isAlreadyRegistered) {
           const _id = isAlreadyRegistered._id.toString();
