@@ -1,9 +1,9 @@
 const express =require("express")
+const ratingAndReviewRoute = express.Router()
 
 const { createRating, getAllRating, deleteReview, overAllReview } = require("../controllers/ratingAndReviewController")
 const { authMiddleware } = require("../middleware/authMiddle")
 
-const ratingAndReviewRoute = express.Router()
 
 ratingAndReviewRoute.post("/createRating",authMiddleware,createRating)
 ratingAndReviewRoute.get("/getallReview",getAllRating)
@@ -12,4 +12,4 @@ ratingAndReviewRoute.get("/overallReview/:productId",overAllReview)
 
 
 
-module.exports ={ratingAndReviewRoute}
+module.exports =ratingAndReviewRoute
