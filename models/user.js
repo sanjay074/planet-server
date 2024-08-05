@@ -3,7 +3,6 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [true, "Mobile number is required"],
-    
     trim: true,
     validate: {
       validator: function (v) {
