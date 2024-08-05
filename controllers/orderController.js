@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Order = require("../models/Order");
 const Cart = require("../models/Cart");
-const Address = require("../models/address");
+const Address = require("../models/userAddress");
 const Product = require("../models/Product");
 const Joi = require('joi');
 

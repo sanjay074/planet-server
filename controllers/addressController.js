@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const Address = require("../models/address");
+const Address = require("../models/userAddress");
 
 const mongoose = require("mongoose");
 
