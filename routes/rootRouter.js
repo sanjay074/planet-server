@@ -9,6 +9,11 @@ const contactRoute = require("./contactRoute");
 const addressRoute = require("./addressRoute");
 const cartRoute =require("./cartRoute");
 const orderRoute =require("./orderRoute");
+const returnOrder = require("../models/returnOrder");
+const returnRoute = require("./returnRoute");
+const whislistRoute = require("./whislistRoute");
+const { ratingAndReviewRoute } = require("./ratingAndReviewRoute");
+const { searchRoute } = require("./searchRoute");
 
 const router = express.Router();
 
@@ -22,5 +27,9 @@ router.use("/contact",contactRoute)
 router.use("/address",addressRoute)
 router.use("/cart",cartRoute)
 router.use("/order",orderRoute)
+router.use("/return",returnRoute)
+router.use("/whislist",whislistRoute)
+router.use("/ratingReview",ratingAndReviewRoute)
+router.use("/searchRoute",searchRoute)
 
 module.exports = router;
