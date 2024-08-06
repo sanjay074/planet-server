@@ -34,7 +34,7 @@ const addToCart = async (req, res) => {
       }
 
     
-      // Find the product
+      //Find the product
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).send({
@@ -66,18 +66,18 @@ const addToCart = async (req, res) => {
 
     
     // Calculate the total price of the cart
-    let totalPrice = 0;
-    for (const item of cart.cartItems) {
-      const product = await Product.findById(item.productId);
-      if (!product) {
-        return res.status(404).send({
-          success: false,
-          message: `Product not available: ${item.productId}`,
-        });
-      }
-      totalPrice += product.basePrice * item.quantity;
-    }
-    cart.totalPrice = totalPrice;
+    // let totalPrice = 0;
+    // for (const item of cart.cartItems) {
+    //   const product = await Product.findById(item.productId);
+    //   if (!product) {
+    //     return res.status(404).send({
+    //       success: false,
+    //       message: `Product not available: ${item.productId}`,
+    //     });
+    //   }
+    //   totalPrice += product.basePrice * item.quantity;
+    // }
+    // cart.totalPrice = totalPrice;
 
     
     // Save the updated cart
@@ -88,11 +88,10 @@ const addToCart = async (req, res) => {
       message: "Items added to cart"
     });
   } catch (error) {
-      console.error("Error in adding to the cart:", error);
       res.status(500).send({
       success: false,
       message: "Internal server error",
-      error: error.message,
+      error: error.message.toString(),
     });
   }
 };
@@ -108,40 +107,41 @@ const getcart = async (req, res) => {
           return res.status(400).json({ success: false, message: 'User ID is required' });
       }
 
-      const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name finalPrice');
+      const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name finalPrice basePrice');
 
       if (!cart) {
           return res.status(404).json({ message: 'Cart not found' });
       }
 
       let subtotal = 0;
-      
+      let totalDiscount = 0;
+
       cart.cartItems.forEach(item => {
-          subtotal += item.productId.finalPrice * item.quantity;
+          const itemSubtotal = item.productId.finalPrice * item.quantity;
+          const itemDiscount = (item.productId.basePrice - item.productId.finalPrice);
+          
+          subtotal += itemSubtotal;
+          totalDiscount += itemDiscount;
       });
 
-
-
-
-      const discount = 0;
       const deliveryCharges = 20;
-      const totalAmount = subtotal - discount + deliveryCharges;
+      const totalAmount = subtotal  + deliveryCharges;
       const orderSummary = {
         subtotal,
-        discount,
+        discount: totalDiscount,
         deliveryCharges,
         totalAmount
     };
 
     return res.status(200).json({ cart, orderSummary });
   } catch (error) {
-      console.error('Error fetching cart:', error);
-      return res.status(500).json({
-          success: false,
-          message: "Error in getting the cart"
-      });
+    return res.status(500).json({
+      success: false,
+      message: error.message.toString(),
+  });
   }
 }
+
 
 
 //delete from cart 
@@ -198,8 +198,7 @@ const deleteFromCart = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Item quantity decreased in cart",
-      cart
+      message: "Item quantity decreased in cart"
     });
 
   } catch (error) {
@@ -234,9 +233,9 @@ const updateItemQuantity = async (req, res) => {
       }
 
       if (action === 'increment') {
-          cart.items[itemIndex].quantity += 1;
+          cart.cartItems[itemIndex].quantity += 1;
       } else if (action === 'decrement') {
-          cart.items[itemIndex].quantity = Math.max(0, cart.items[itemIndex].quantity - 1);
+          cart.cartItems[itemIndex].quantity = Math.max(0, cart.cartItems[itemIndex].quantity - 1);
       } else {
           return res.status(400).json({ success: false, message: 'Invalid action' });
       }
