@@ -85,8 +85,7 @@ const addToCart = async (req, res) => {
 
       res.status(200).json({
       success: true,
-      message: "Items added to cart",
-      cart,
+      message: "Items added to cart"
     });
   } catch (error) {
       console.error("Error in adding to the cart:", error);
@@ -98,56 +97,53 @@ const addToCart = async (req, res) => {
   }
 };
 
-
-
-
-
 //get the cart 
-const getcart =async(req,res)=>{
-    try{
-       const _id =req.params.id 
-       if(!mongoose.Types.ObjectId.isValid(_id)){
-         return res.status(400).json({message:"Invalid address Id"})
-     }
+const getcart = async (req, res) => {
+  try {
+      const userId = req.userId;
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ success: false, message: "Invalid user ID" });
+      }
+      if (!userId) {
+          return res.status(400).json({ success: false, message: 'User ID is required' });
+      }
 
-         const alldata =await Cart.findOne({_id})
-          .populate({
-            path:'userId',
-            select:'phone -_id'
-          })
-          .populate({
-            path:'cartItems.productId',
-            select:"name color brand size -_id",
-            populate:{
-              path:'brand',
-              select:'name -_id'
-            }
-          })
+      const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name finalPrice');
 
-          if(!alldata){
-              return res.status(401).send({
-              success:false,
-              message:"not item will available in cart  "
-            })
-          }
-         
-        
-            return res.status(200).json({
-            success:true,
-            message:"Here is your all data",
-            total:alldata.length,
-            alldata 
+      if (!cart) {
+          return res.status(404).json({ message: 'Cart not found' });
+      }
 
-        }) 
+      let subtotal = 0;
+      
+      cart.cartItems.forEach(item => {
+          subtotal += item.productId.finalPrice * item.quantity;
+      });
 
-           }catch(error){
-            return res.status(500).send({
-            success:false,
-            message:"Error in getting the cart"
-         })
 
-    }
+
+
+      const discount = 0;
+      const deliveryCharges = 20;
+      const totalAmount = subtotal - discount + deliveryCharges;
+      const orderSummary = {
+        subtotal,
+        discount,
+        deliveryCharges,
+        totalAmount
+    };
+
+    return res.status(200).json({ cart, orderSummary });
+  } catch (error) {
+      console.error('Error fetching cart:', error);
+      return res.status(500).json({
+          success: false,
+          message: "Error in getting the cart"
+      });
+  }
 }
+
+
 //delete from cart 
 
 const deleteFromCart = async (req, res) => {
