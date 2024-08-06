@@ -220,7 +220,7 @@ const updateItemQuantity = async (req, res) => {
   try {
       const userId = req.userId;
       const { productId, action } = req.body;
-      if(!mongoose.Types.ObjectId.isValid(itemId)){
+      if(!mongoose.Types.ObjectId.isValid(productId)){
           return res.status(400).json({ success: false, message: "Invalid item ID" });
       }
       if (!userId) {
