@@ -36,7 +36,7 @@ async function createBrand(req, res) {
         .json({ success: false, message: "Brand name already exists" });
     }
 
-    // Create a new Brand instance and save it
+    //Create a new Brand instance and save it
     const newBrand = new Brand({
       name: req.body.name,
       pic: uploadResult.secure_url,
@@ -51,6 +51,7 @@ async function createBrand(req, res) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
 
 async function getAllBrand(req, res) {
   try {

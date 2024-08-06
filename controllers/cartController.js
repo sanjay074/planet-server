@@ -215,4 +215,44 @@ const deleteFromCart = async (req, res) => {
   }
 };
 
-module.exports ={addToCart,getcart,deleteFromCart}
+
+const updateItemQuantity = async (req, res) => {
+  try {
+      const userId = req.userId;
+      const { productId, action } = req.body;
+      if(!mongoose.Types.ObjectId.isValid(productId)){
+          return res.status(400).json({ success: false, message: "Invalid item ID" });
+      }
+      if (!userId) {
+          return res.status(400).json({ success: false, message: 'User ID is required' });
+      }
+      const cart = await Cart.findOne({ userId }).exec();
+      if (!cart) {
+          return res.status(400).json({ success: false, message: 'Cart not found' });
+      }
+      const itemIndex = cart.cartItems.findIndex(
+          item => item.productId.toString() === productId
+      );
+      if (itemIndex === -1) {
+          return res.status(400).json({ success: false, message: 'Item not found in cart' });
+      }
+
+      if (action === 'increment') {
+          cart.items[itemIndex].quantity += 1;
+      } else if (action === 'decrement') {
+          cart.items[itemIndex].quantity = Math.max(0, cart.items[itemIndex].quantity - 1);
+      } else {
+          return res.status(400).json({ success: false, message: 'Invalid action' });
+      }
+      await cart.save();
+      return res.status(200).json({ success: true, message: 'Item quantity updated successfully' });
+
+  } catch (error) {
+      return res.status(500).json({
+          success: false,
+          message: error.message.toString(),
+      });
+  }
+}
+
+module.exports ={addToCart,getcart,deleteFromCart,updateItemQuantity}
