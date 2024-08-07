@@ -10,7 +10,7 @@ const {
 const { productValidationSchema } = require("../validations/validation");
 const mongoose = require("mongoose");
 
-// Helper function to validate ObjectId
+//Helper function to validate ObjectId
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 async function createProduct(req, res) {
