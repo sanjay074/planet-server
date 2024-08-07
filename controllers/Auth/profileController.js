@@ -2,6 +2,7 @@ const Joi = require('joi');
 
 const mongoose = require("mongoose");
 const Profile = require('../../models/Profile');
+const Users = require("../../models/user");
 //create profile
 async function createProfileController(req,res){
    try{
@@ -155,6 +156,24 @@ async function getAllProfileController(req,res){
 
     }
 }
+
+const getUserProfile = async (req,res)=>{
+  try{
+    const userId = req.userId;
+    const userData = await Users.findById(userId);
+    return res.status(200).json({
+       status:true,
+       message:"Get user details successfully",userData
+    })
+
+  }catch(error){
+    return res.status(500).json({
+      success: false,
+      message: error.message.toString(),
+  });
+  }
+}
+
 //get single profile data
 async function  getSingleProfileController(req,res){
 try{
@@ -197,6 +216,7 @@ module.exports = {
    updateProfileController,
    deleteProfileController,
    getAllProfileController,
-   getSingleProfileController
+   getSingleProfileController,
+   getUserProfile
 
 }

@@ -62,7 +62,7 @@ const addTowhislist = async (req, res) => {
     }
 
     const userId = req.userId;
-    const productToAdd = value.products; // Use validated value
+    const productToAdd = value.products; // Use validated value 
 
     let mywhislist = await Whislist.findOne({ userId });
     if (!mywhislist) {
