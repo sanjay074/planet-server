@@ -11,7 +11,7 @@ async function contactForm (req, res)  {
       message: Joi.string().max(250).message('Message should not exceed 250 characters').required()
     });
 
-    // Validate the request body against the schema
+    //Validate the request body against the schema
     const { error } = schema.validate(req.body);
     if (error) {
       return res.status(400).send({
