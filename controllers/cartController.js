@@ -86,7 +86,7 @@ const getcart = async (req, res) => {
           return res.status(400).json({ success: false, message: 'User ID is required' });
       }
 
-      const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name finalPrice basePrice');
+      const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size');
 
       if (!cart) {
           return res.status(404).json({ message: 'Cart not found' });

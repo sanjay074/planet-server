@@ -54,7 +54,7 @@ async function createProduct(req, res) {
         .json({ error: "Failed to upload one or more images" });
     }
 
-    // Create a new Product instance and save it
+    //Create a new Product instance and save this user
     const newProduct = new Product({
       ...value,
       images: uploadResults.map((result) => result.secure_url),
@@ -120,7 +120,7 @@ async function getProduct(req, res) {
     if (category && !categoryDoc) {
       return res
         .status(404)
-        .json({ success: false, message: "Category not found" });
+        .json({ success: false, message: "Category not found"});
     }
     if (subCategory && !subCategoryDoc) {
       return res
@@ -141,7 +141,7 @@ async function getProduct(req, res) {
       filter.finalPrice = { $gte: Number(minPrice) };
     if (maxPrice && !isNaN(maxPrice))
       filter.finalPrice = { ...filter.finalPrice, $lte: Number(maxPrice) };
-
+    
     const sortOptions = {};
     if (sortBy) sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
 
@@ -645,7 +645,7 @@ async function updateProduct(req, res) {
   }
 }
 
-// async function createProduct(req, res) {
+//async function createProduct(req, res) {
 //   try {
 //     // Validate the request body
 //     const { error, value } = productValidationSchema.validate(req.body);
@@ -653,7 +653,7 @@ async function updateProduct(req, res) {
 //       return res.status(400).json({ error: error.details[0].message });
 //     }
 
-//     // Validate referenced IDs
+//     //Validate referenced IDs
 //     const { category, subCategory, brand } = value;
 //     if (
 //       !isValidObjectId(category) ||
