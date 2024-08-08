@@ -177,7 +177,7 @@ const deleteFromCart = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Item quantity decreased in cart"
+      message: "Item deleted successfully"
     });
 
   } catch (error) {

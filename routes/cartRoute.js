@@ -5,7 +5,7 @@ const cartRoute =express.Router()
 
 cartRoute.post("/add",authMiddleware,addToCart)
 cartRoute.get("/get",authMiddleware,getcart)
-cartRoute.delete("/delete",authMiddleware,deleteFromCart)
+cartRoute.post("/delete",authMiddleware,deleteFromCart)
 cartRoute.put("/updateItemQuantity",authMiddleware,updateItemQuantity);
 
 

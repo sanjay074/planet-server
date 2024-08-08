@@ -13,6 +13,8 @@ const mongoose = require("mongoose");
 //Helper function to validate ObjectId
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
+
+
 async function createProduct(req, res) {
   try {
     // Validate the request body
@@ -22,7 +24,7 @@ async function createProduct(req, res) {
     }
 
     // Validate referenced IDs
-    const { category, subCategory, brand } = value;
+    const { category,subCategory,brand,footSize,size} = value;
     if (
       !isValidObjectId(category) ||
       !isValidObjectId(subCategory) ||
@@ -32,7 +34,21 @@ async function createProduct(req, res) {
         .status(400)
         .json({ error: "Invalid category, subcategory, or brand ID" });
     }
+    
 
+
+    const Data = await Category.findById(category)
+    const categoryName =Data.name
+
+    if(categoryName === "shoes"){
+        if(!footSize){
+          return res.status(400).send({
+            success:false,
+            message:"Foot size required"
+          })
+
+        }
+      
     // Check for the files
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
@@ -40,7 +56,7 @@ async function createProduct(req, res) {
 
     // Collect local file paths
     const localFilePaths = req.files.map((file) => file.path);
-    console.log(localFilePaths, "localfilepaths");
+   //console.log(localFilePaths, "localfilepaths");
 
     // Upload images to Cloudinary
     const uploadResults = await uploadMultipleImagesOnCloudinary(
@@ -54,27 +70,80 @@ async function createProduct(req, res) {
         .json({ error: "Failed to upload one or more images" });
     }
 
-    //Create a new Product instance and save this user
+    // Create a new Product instance and save it
+    const newProduct = new Product({
+      ...value,
+      images: uploadResults.map((result) => result.secure_url),
+
+    });
+    const savedProduct = await newProduct.save();
+
+     return res.status(201).json({
+      message: "New Product Created Successfully",
+      
+      record: savedProduct,
+    });
+  }
+    else {
+    // Check for the files
+    if(!size){
+      return res.status(400).send({
+        success:false,
+        message:"Size is required"
+      })
+
+    }
+
+    //images file check 
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    // Collect local file paths
+    const localFilePaths = req.files.map((file) => file.path);
+    //console.log(localFilePaths, "localfilepaths");
+
+    // Upload images to Cloudinary
+    const uploadResults = await uploadMultipleImagesOnCloudinary(
+      localFilePaths
+    );
+
+    // Check if any upload failed
+    if (uploadResults.some((result) => !result)) {
+      return res
+        .status(500)
+        .json({ error: "Failed to upload one or more images" });
+    }
+
+    // Create a new Product instance and save it
     const newProduct = new Product({
       ...value,
       images: uploadResults.map((result) => result.secure_url),
     });
     const savedProduct = await newProduct.save();
 
-    return res.status(201).json({
+     return res.status(201).json({
       message: "New Product Created Successfully",
       record: savedProduct,
     });
-  } catch (error) {
-    console.error("Error creating product:", error);
-    // Duplicate entry error handling
-    if (error.code === 11000) {
-      return res.status(422).json({ message: "Duplicate entry found" });
     }
 
+    
+}
+
+   catch (error){  
+    console.error("Error creating product:", error);
+    // Duplicate entry error handling
+    if(error.code === 11000) {
+      return res.status(422).json({ message: "Duplicate entry found" });
+    }
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+
+
+
 
 async function getProduct(req, res) {
   try {

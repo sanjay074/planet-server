@@ -10,13 +10,14 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 const { uploadProduct } = require("../middleware/fileUpload");
+const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
 
 productRouter
-  .post("/", uploadProduct.array("images"), createProduct)
+  .post("/",authMiddleware,isAdminMd,uploadProduct.array("images"), createProduct)
   // .get("/", getAllProduct)
   .get("/", getProduct)
   .get("/:_id", getSingleProduct)
-  .put("/:_id", uploadProduct.array("images"), updateProduct)
-  .delete("/:_id", uploadProduct.array("images"), deleteProduct);
+  .put("/:_id",authMiddleware,isAdminMd,uploadProduct.array("images"), updateProduct)
+  .delete("/:_id",authMiddleware,isAdminMd ,uploadProduct.array("images"), deleteProduct);
 
 module.exports = productRouter;

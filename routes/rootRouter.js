@@ -14,6 +14,7 @@ const returnRoute = require("./returnRoute");
 const whislistRoute = require("./whislistRoute");
 const  ratingAndReviewRoute  = require("./ratingAndReviewRoute");
 const  searchRoute  = require("./searchRoute");
+const userDetailsRoute = require("./userDetailsRoute");
 
 const router = express.Router();
 
@@ -31,5 +32,6 @@ router.use("/return",returnRoute)
 router.use("/whislist",whislistRoute)
 router.use("/ratingReview",ratingAndReviewRoute)
 router.use("/searchRoute",searchRoute)
+router.use("/userDetails",userDetailsRoute)
 
 module.exports = router;

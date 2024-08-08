@@ -28,14 +28,19 @@ const productSchema = mongoose.Schema(
       required: [true, "Product brandId is required"],
     },
     color: {
-      type: [String],
+      type:[String],
       required: [true, "Product color is required"],
     },
     size: {
-      type: String,
-      required: [true, "Product size is required"],
+      type:[String],
+   //   required: [true, "Product size is required"],
       enum: ["XS", "S", "M", "L", "XL", "XXL"],
     },
+    footSize:{
+      type:[String],
+      enum:["1","2","3","4","5","6","7","8","9","10","11","12"]
+    },
+
     quantity: {
       type: Number,
       required: [true, "Product quantity is required"],

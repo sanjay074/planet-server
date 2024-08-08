@@ -8,12 +8,15 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controllers/categoryController");
+const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
 
 categoryRouter
-  .post("/", createCategory)
+  
+  .post("/",authMiddleware,isAdminMd,createCategory)
   .get("/", getAllCategory)
-  .get("/:_id", getCategoryById)
-  .put("/:_id", updateCategory)
-  .delete("/:_id", deleteCategory);
+  .get("/:_id",getCategoryById)
+  .put("/:_id",authMiddleware,isAdminMd,updateCategory)
+  .delete("/:_id",authMiddleware,isAdminMd,deleteCategory);
+
 
 module.exports = categoryRouter;

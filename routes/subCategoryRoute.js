@@ -8,12 +8,14 @@ const {
   updateSubCategory,
   deleteSubCategory,
 } = require("../controllers/subCategoryController");
+const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
 
 subCategoryRouter
-  .post("/", createSubCategory)
-  .get("/", getAllSubCategory)
-  .get("/:_id", getSubCategoryById)
-  .put("/:_id", updateSubCategory)
-  .delete("/:_id", deleteSubCategory);
+.post("/",authMiddleware,isAdminMd,createSubCategory)
+.get("/", getAllSubCategory)
+.get("/:_id", getSubCategoryById)
+.put("/:_id",authMiddleware,isAdminMd,updateSubCategory)
+.delete("/:_id",authMiddleware,isAdminMd,deleteSubCategory);
+  
 
 module.exports = subCategoryRouter;

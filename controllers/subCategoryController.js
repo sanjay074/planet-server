@@ -11,7 +11,7 @@ async function createSubCategory(req, res) {
       res.status(400).json({ message: error.details[0].message });
     }
     //check if the brand name already exists
-    const existingSubCategory = await SubCategory.fineOne({ name: data.name });
+    const existingSubCategory = await SubCategory.findOne({ name: data.name });
     if (existingSubCategory) {
       return res
         .status(400)
@@ -29,6 +29,9 @@ async function createSubCategory(req, res) {
   }
 }
 
+
+
+
 async function getAllSubCategory(req, res) {
   try {
     const response = await SubCategory.find({});
@@ -42,6 +45,7 @@ async function getAllSubCategory(req, res) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
 
 async function getSubCategoryById(req, res) {
   try {
