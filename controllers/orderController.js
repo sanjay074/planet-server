@@ -239,4 +239,56 @@ const updateOrder = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getAllOrder, getmyOrder, updateOrder };
+const newOrder = async(req,res)=>{
+  try{
+    const recentOrder = await Order.find({}).sort({createdAt:-1})
+    return res.status(200).send({
+      success:true,
+      message:"here is your all recent data",
+      totalOrder:recentOrder.length,
+      recentOrder
+    })
+
+  }catch(error){
+    return res.status(500).send({
+      success:false,
+      message:"error in finding the recent order "
+    })
+  }
+}
+
+const  getRecentOrder = async(req,res)=>{
+  try{
+    //same day ka data chahiye bs jisko date.now()se match kara ka dena hai
+    const todayDate = new Date()
+    const startDay =new Date(todayDate.setHours(0,0,0))
+    const EndofDay =new Date(todayDate.setHours(23,59,59,999))
+
+    const myData =await Order.find({
+      createdAt:{
+        $gte:startDay,
+        $lte:EndofDay
+      }
+    })
+    if(!myData){
+      return res.status(500).send({
+        success:false,
+        message:"No order avialable for today"
+      })
+    }
+    return res.status(200).send({
+      success:true,
+      message:"your all data run successfully",
+      TotalTodayOrder:myData.length,
+      myData
+    }) 
+  }catch(error){
+    return res.status(500).send({
+      success:false,
+      message:"error in getting the recent order",
+      error:error.message
+    })
+  }
+}
+
+module.exports = { createOrder, getAllOrder, getmyOrder, updateOrder,newOrder,getRecentOrder};

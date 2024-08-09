@@ -6,6 +6,7 @@ const addToCart = async (req, res) => {
   try {
       const userId = req.userId;
       const productsToAdd = req.body.products;
+      console.log(productsToAdd)
 
       if (!Array.isArray(productsToAdd) || productsToAdd.length === 0) {
           return res.status(400).send({
