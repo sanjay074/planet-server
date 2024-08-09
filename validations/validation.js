@@ -95,7 +95,7 @@ const productValidationSchema = Joi.object({
     "any.required": "Product quantity is required",
   }),
   stock: Joi.boolean().default(true),
-  discountPrice: Joi.number().min(0).required().messages({
+  discountPrice: Joi.number().min(0).messages({
     "number.base": "Product discount price must be a number",
     "number.min": "Product discount price cannot be less than 0",
     "any.required": "Product discount price is required",

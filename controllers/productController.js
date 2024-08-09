@@ -24,7 +24,7 @@ async function createProduct(req, res) {
     }
 
     // Validate referenced IDs
-    const { category,subCategory,brand,footSize,size} = value;
+    const { category,subCategory,brand,footSize,size,basePrice,finalPrice} = value;
     if (
       !isValidObjectId(category) ||
       !isValidObjectId(subCategory) ||
@@ -35,6 +35,8 @@ async function createProduct(req, res) {
         .json({ error: "Invalid category, subcategory, or brand ID" });
     }
     
+    const discount = basePrice-finalPrice;
+    discountPrice = ((discount/basePrice)*100);
 
 
     const Data = await Category.findById(category)
@@ -72,7 +74,9 @@ async function createProduct(req, res) {
 
     // Create a new Product instance and save it
     const newProduct = new Product({
+      
       ...value,
+      discountPrice,
       images: uploadResults.map((result) => result.secure_url),
 
     });
@@ -84,6 +88,7 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
   }
+
     else {
     // Check for the files
     if(!size){

@@ -50,9 +50,9 @@ const productSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    discountPrice: {
+    discountPrice:{
       type: Number,
-      required: [true, "Product discount price is required"],
+    //  required: [true, "Product discount price is required"],
       min: 0,
     },
     basePrice:{
@@ -60,14 +60,14 @@ const productSchema = mongoose.Schema(
       required: [true, "Product base price is required"],
       min: 0,
     },
-    finalPrice: {
+    finalPrice:{
       type: Number,
       required: [true, "product final price is required"],
       min: 0,
       validate: {
         validator: function () {
           return this.finalPrice <= this.basePrice;
-        },
+       },
         message: "Final price should be less than or equal to base price",
       },
     },

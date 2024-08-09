@@ -6,7 +6,7 @@ const addToCart = async (req, res) => {
   try {
       const userId = req.userId;
       const productsToAdd = req.body.products;
-      console.log(productsToAdd)
+    //  console.log(productsToAdd)
 
       if (!Array.isArray(productsToAdd) || productsToAdd.length === 0) {
           return res.status(400).send({
@@ -70,50 +70,70 @@ const addToCart = async (req, res) => {
       res.status(500).send({
           success: false,
           message: "Internal server error",
-          error: error.message.toString(),
+          error: error.message,
       });
   }
 };
 
 
 //get the cart 
+
 const getcart = async (req, res) => {
   try {
+
       const userId = req.userId;
       if (!mongoose.Types.ObjectId.isValid(userId)) {
-          return res.status(400).json({ success: false, message: "Invalid user ID" });
+          return res.status(400).json({
+             success: false, 
+             message: "Invalid user ID"
+        });
       }
       if (!userId) {
-          return res.status(400).json({ success: false, message: 'User ID is required' });
+             return res.status(400).json({
+             success: false,
+              message: 'User ID is required'
+             });
       }
-
-      const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size');
-
+    console.log("pass1")
+      const cart = await Cart.findOne({userId}).populate('cartItems.productId', 'name description finalPrice basePrice images size discountPrice');
       if (!cart) {
           return res.status(404).json({ message: 'Cart not found' });
       }
+      console.log("Pass2")
+      console.log(cart)
 
       let subtotal = 0;
       let totalDiscount = 0;
 
       cart.cartItems.forEach(item => {
           const itemSubtotal = item.productId.finalPrice * item.quantity;
-          const itemDiscount = (item.productId.basePrice - item.productId.finalPrice);
+          const itemDiscount = (item.productId.discountPrice);
           
           subtotal += itemSubtotal;
           totalDiscount += itemDiscount;
       });
-
+      console.log("pass3")
       const deliveryCharges = 20;
-      const totalAmount = subtotal  + deliveryCharges;
+      const totalAmount = subtotal  + deliveryCharges - totalDiscount;
+      
+      
+
       const orderSummary = {
         subtotal,
         discount: totalDiscount,
         deliveryCharges,
-        totalAmount
+        totalPrice:totalAmount
     };
+  
+     
+   console.log("pass4")
+    return res.status(200).json({
+      success:true,
+      message:"here is your all data", 
+      cart,
+      orderSummary
+       });
 
-    return res.status(200).json({ cart, orderSummary });
   } catch (error) {
     return res.status(500).json({
       success: false,

@@ -53,11 +53,34 @@ const searchController = async (req, res) => {
 
 const latestProductController = async(req,res)=>{
     try{
-        const myProduct = await Product.find({}).sort({createdAt:-1})
+      //today Date 
+      const TodayDate=new Date()
+      //10 day ago 
+      const PrevdayAgo =new Date(TodayDate)
+      PrevdayAgo.setDate(TodayDate.getDate()-10)
+      
+        const myProduct = await Product.find({
+          createdAt:{
+            $gte:PrevdayAgo,
+            $lte:TodayDate
+          }
+        })
+        if(myProduct.length  === 0){
+          const data =await Product.find({}).sort({createdAt:-1}).limit(15) 
+          return res.status(200).send({
+            success:true,
+            message:"this is my data when admin will not created any data",
+            data
+          })
+        
+        }
+
         //return response 
             return res.status(200).send({
             success:true,
             message:"here is your all data",
+            TodayDate,
+            PrevdayAgo,
             total:myProduct.length,
             myProduct
         })
