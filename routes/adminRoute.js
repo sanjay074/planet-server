@@ -1,14 +1,14 @@
 const express = require("express");
 const adminRouter  = express.Router();
 
-const { requireSignIn, isAdminMd } = require("../middleware/authMiddle");
+const { isAdminMd, authMiddleware } = require("../middleware/authMiddle");
 
 const { singupController, signinController, getAllController } = require("../controllers/Auth/adminController");
 
 adminRouter
    .post("/signup",singupController)
    .post("/signin",signinController)
-   .get("/get-all",requireSignIn,isAdminMd,getAllController)
+   .get("/get-all",authMiddleware,isAdminMd,getAllController)
    
    
 
