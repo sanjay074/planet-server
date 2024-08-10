@@ -29,7 +29,7 @@ const contactSchema = mongoose.Schema({
   },
   message: {
     type: String,
-    maxLength: [250, "Message should not exceed 250 characters"]
+    maxLength: [1500, "Message should not exceed 1500 characters"]
   }
 }, { timestamps: true });
 
