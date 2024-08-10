@@ -18,7 +18,7 @@ const addTowhislist = async (req, res) => {
     let mywhislist =await Whislist.findOne({userId})
 
     if(!mywhislist){
-      mywhislist = new Whislist ({userId,cartItems:[]})
+      mywhislist = new Whislist ({userId,whislistItems:[]})
     }
 
     for(const productData of productToadded){
@@ -38,7 +38,7 @@ const addTowhislist = async (req, res) => {
       }
       
           // Check if the product is already in the cart
-          const itemIndex = mywhislist.cartItems.findIndex(
+          const itemIndex = mywhislist.whislistItems.findIndex(
             (item) => item.productId.toString() === productId
         );
 
@@ -49,7 +49,7 @@ const addTowhislist = async (req, res) => {
             });
         } else {
 
-            mywhislist.cartItems.push({ productId});
+            mywhislist.whislistItems.push({productId});
         }
     }
 
@@ -87,7 +87,7 @@ const getWhishList = async (req, res) => {
       message:"user id is not available"
     })
   } 
-  const myWhilist = await Whislist.findOne({userId}).populate('cartItems.productId','name description finalPrice basePrice images size discountPrice')
+  const myWhilist = await Whislist.findOne({userId}).populate('whislistItems.productId','name description finalPrice basePrice images size discountPrice')
     if(!myWhilist){
     return res.status(400).send({
       success:false,
@@ -163,6 +163,7 @@ const deleteSingleItemWhislist = async(req,res)=>{
   }
 
   // Find the user's cart
+  
   let myWhilist = await Whislist.findOne({ userId });
   if (!myWhilist) {
     return res.status(404).send({
@@ -172,7 +173,7 @@ const deleteSingleItemWhislist = async(req,res)=>{
   }
 
   // Find the product index in the cart
-  const itemIndex = myWhilist.cartItems.findIndex(item => 
+  const itemIndex = myWhilist.whislistItems.findIndex(item => 
     item.productId.toString() === productId);
   if (itemIndex === -1) {
     return res.status(404).send({
@@ -182,10 +183,10 @@ const deleteSingleItemWhislist = async(req,res)=>{
   }
 
   // Decrease the quantity or remove the product if quantity is 1
-  if (myWhilist.cartItems[itemIndex].quantity > 1) {
-    myWhilist.cartItems[itemIndex].quantity -= 1;
+  if (myWhilist.whislistItems[itemIndex].quantity > 1) {
+     myWhilist.whislistItems[itemIndex].quantity -= 1;
   } else {
-    myWhilist.cartItems.splice(itemIndex, 1);
+    myWhilist.whislistItems.splice(itemIndex, 1);
   }
 
     await  myWhilist.save()
