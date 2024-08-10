@@ -9,8 +9,7 @@ const orderSchema =  mongoose.Schema({
         productId:{
             type:mongoose.Schema.Types.ObjectId,
             ref:"Product",
-            required:true
-            
+            required:true      
         },
         quantity:{
             type:Number,
@@ -32,7 +31,7 @@ const orderSchema =  mongoose.Schema({
     },
     status:{
         type:String,
-        enum:[ "Processed","shipped","inRoute",
+        enum:["Processed","shipped","inRoute",
                "Arrival","delivered","Returned",
                "cancelled","outofStock"],
         default:"Processed"

@@ -9,6 +9,7 @@ orderRoute.post("/createOrder",authMiddleware,createOrder)
 orderRoute.get("/getAllorder",authMiddleware,isAdminMd,getAllOrder)
 //user all order 
 orderRoute.get("/getMyOrder",authMiddleware,getmyOrder)
+
 orderRoute.put("/updateOrder/:id",authMiddleware,isAdminMd,updateOrder)
 
 //all recent order 
@@ -20,4 +21,4 @@ orderRoute.get("/getRecentOrder",authMiddleware,isAdminMd,getRecentOrder)
 
 
 
-module.exports = orderRoute 
+module.exports = orderRoute

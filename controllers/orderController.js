@@ -3,41 +3,15 @@ const Order = require("../models/Order");
 const Cart = require("../models/Cart");
 const Address = require("../models/userAddress");
 const Product = require("../models/Product");
-const Joi = require('joi');
 
 // Joi validation schemas
-const orderSchema = Joi.object({
-  addressId: Joi.string().required(),
-  products: Joi.array().items(
-    Joi.object({
-      productId: Joi.string().required(),
-      quantity: Joi.number().min(1).required()
-    })
-  ).optional(),
-  addfromCart: Joi.boolean().optional()
-});
-
-const returnOrderSchema = Joi.object({
-  orderId: Joi.string().required(),
-  reason: Joi.string().valid('received wrong item', 'quality of product not matched', 'product is missing', 'don’t like the size').required(),
-  message: Joi.string().optional()
-});
-
-const updateOrderSchema = Joi.object({
-  status: Joi.string().required()
-});
 
 const createOrder = async (req, res) => {
   try {
     const userId = req.userId;
-    const { error } = orderSchema.validate(req.body);
-    if (error) {
-      return res.status(400).send({
-        success: false,
-        message: error.details[0].message
-      });
-    }
-    const { addressId, products, addfromCart } = req.body;
+
+   
+    const { addressId, products } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(addressId)) {
       return res.status(400).send({
@@ -68,6 +42,7 @@ const createOrder = async (req, res) => {
         }
 
         const product = await Product.findById(productId);
+
         if (!product) {
           return res.status(400).send({
             success: false,
@@ -80,37 +55,13 @@ const createOrder = async (req, res) => {
             message: "Stock not available"
           });
         }
-        totalPrice += product.basePrice * quantity;
+        totalPrice += product.finalPrice*quantity;
         orderItems.push({ productId, quantity });
       }
     }
 
-    if (addfromCart) {
-      let cart = await Cart.findOne({ userId }).populate("cartItems.productId");
-      if (cart && cart.cartItems.length > 0) {
-        for (const item of cart.cartItems) {
-          const product = item.productId;
-          const quantity = item.quantity;
 
-          if (product.quantity < quantity) {
-            return res.status(401).send({
-              success: false,
-              message: "Stock not available"
-            });
-          }
-          totalPrice += product.basePrice * quantity;
-          orderItems.push({ productId: product._id, quantity });
-        }
-      }
-    }
-
-    if (orderItems.length === 0) {
-      return res.status(400).send({
-        success: false,
-        message: "your cart is empty"
-      });
-    }
-
+  
     const order = new Order({
       userId,
       orderItems,
@@ -125,13 +76,7 @@ const createOrder = async (req, res) => {
       });
     }
 
-    if (addfromCart) {
-      await Cart.findByIdAndUpdate({ userId }, {
-        cartItems: [],
-        totalPrice: 0
-      });
-    }
-
+   
     return res.status(200).json({
       success: true,
       message: "Order placed successfully",
@@ -141,14 +86,24 @@ const createOrder = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "error in creating the order",
-      error
+      error:error.message
     });
   }
 };
 
 const getAllOrder = async (req, res) => {
   try {
-    const getAllData = await Order.find({});
+
+    const getAllData = await Order.find({})
+         .populate({
+          path:"orderItems.productId",
+          select:'name images  -_id'
+         })
+         .populate({
+          path:"address",
+          select:"name mobile email Pincode Landmark district state   -_id"
+
+         })
 
     return res.status(200).json({
       success: true,
@@ -156,6 +111,7 @@ const getAllOrder = async (req, res) => {
       total: getAllData.length,
       getAllData
     });
+
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -196,6 +152,10 @@ const getmyOrder = async (req, res) => {
     });
   }
 };
+
+
+
+//update from cart
 
 const updateOrder = async (req, res) => {
   try {
@@ -238,6 +198,7 @@ const updateOrder = async (req, res) => {
     });
   }
 };
+//new order controller 
 
 const newOrder = async(req,res)=>{
   try{
@@ -256,6 +217,8 @@ const newOrder = async(req,res)=>{
     })
   }
 }
+
+//get recent order 
 
 const  getRecentOrder = async(req,res)=>{
   try{
