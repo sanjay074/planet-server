@@ -28,12 +28,23 @@ async function contactForm (req, res)  {
       message
     });
  
+    
     const emailData = {
       from: 'noreply@node-react.com',
-      to: email,
-      subject: 'Planet clothing',
-      text:message
+      to: 'planet.clothingsales@gmail.com', 
+      subject: 'Contact Form Submission - Planet Clothing',
+      text: `Name: ${name}\nPhone: ${mobile}\nEmail: ${email}\nMessage: ${message}`,
+      html: `
+          <h2>Contact Form Submission</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Phone:</strong> ${mobile}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Message:</strong></p>
+          <p>${message}</p>
+          
+      `
   };
+  
   sendEmail(emailData);
   const savedContact = await newContact.save();
       return res.status(201).send({
