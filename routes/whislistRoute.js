@@ -6,6 +6,6 @@ const whislistRoute =express.Router()
 //create route 
 whislistRoute.post("/createWhislist",authMiddleware,addTowhislist)
 whislistRoute.get("/getallWhislist/:id",getWhishList)
-whislistRoute.delete("/deleteWhislist",authMiddleware,deleteWhislist)
+whislistRoute.post("/deleteWhislist",authMiddleware,deleteWhislist)
 
 module.exports = whislistRoute

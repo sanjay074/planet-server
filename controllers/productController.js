@@ -36,7 +36,7 @@ async function createProduct(req, res) {
     }
     
     const discount = basePrice-finalPrice;
-    discountPrice = ((discount/basePrice)*100);
+    discountPrice = ((discount/basePrice)*100).toFixed(1);
 
 
     const Data = await Category.findById(category)
