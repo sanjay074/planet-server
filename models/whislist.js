@@ -5,7 +5,7 @@ const whislistSchema =mongoose.Schema({
         ref:'users',
         required:true
     },
-    cartItems:[{
+    whislistItems:[{
         productId:{
            type:mongoose.Schema.Types.ObjectId,
             ref:'Product',
