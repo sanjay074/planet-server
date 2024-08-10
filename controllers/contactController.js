@@ -1,6 +1,6 @@
 const Joi = require('joi');
-const Contact = require('../models/contactUs'); // Adjust the path according to your project structure
-
+const Contact = require('../models/contactUs');
+const {sendEmail} = require("../services/commonFunction")
 async function contactForm (req, res)  {
   try {
     // Define Joi schema
@@ -11,7 +11,6 @@ async function contactForm (req, res)  {
       message: Joi.string().max(250).message('Message should not exceed 250 characters').required()
     });
 
-    //Validate the request body against the schema
     const { error } = schema.validate(req.body);
     if (error) {
       return res.status(400).send({
@@ -21,7 +20,6 @@ async function contactForm (req, res)  {
     }
 
     const { name, mobile, email, message } = req.body;
-
     // Save the data to the database
     const newContact = new Contact({
       name,
@@ -29,13 +27,18 @@ async function contactForm (req, res)  {
       email,
       message
     });
-    const savedContact = await newContact.save();
-
-    // Successful response
+ 
+    const emailData = {
+      from: 'noreply@node-react.com',
+      to: email,
+      subject: 'Planet clothing',
+      text:message
+  };
+  sendEmail(emailData);
+  const savedContact = await newContact.save();
       return res.status(201).send({
       success: true,
-      message: "Contact created successfully",
-      data: savedContact
+      message: "Contact created successfully"
     });
   } catch (error) {
       return res.status(500).send({
