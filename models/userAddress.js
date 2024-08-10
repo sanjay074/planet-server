@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const addressSchema =  mongoose.Schema({
-  name: {
+  name:{
     type: String,
     trim: true,
     required: [true, "Name is required"]
   },
-  mobile: {
+  mobile:{
     type: String,
     trim: true,
     required: [true, "Mobile number is required"],
@@ -17,7 +17,7 @@ const addressSchema =  mongoose.Schema({
       message: props => `${props.value} is not a valid 10-digit mobile number!`
     }
   },
-  email: {
+  email:{
     type: String,
     trim: true,
     required: [true, "Email is required"],
@@ -29,22 +29,22 @@ const addressSchema =  mongoose.Schema({
       message: props => `${props.value} is not a valid email!`
     }
   },
-  Pincode: {
+  Pincode:{
     type: String,
     trim: true,
     required: [true, "Pincode is required"]
   },
-  Landmark: {
+  Landmark:{
     type: String,
     trim: true,
     required: [true, "Landmark is required"]
   },
-  district: {
+  district:{
     type: String,
     trim: true,
     required: [true, "District is required"]
   },
-  state: {
+  state:{
     type: String,
     trim: true,
     required: [true, "State is required"]
