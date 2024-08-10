@@ -10,15 +10,8 @@ const whislistSchema =mongoose.Schema({
            type:mongoose.Schema.Types.ObjectId,
             ref:'Product',
             required:true,
-        },
-        quantity:{
-            type:Number,
-            required:true,
-            default:1
         }
     }],
-    totalprice:{
-        type:Number,
-    }
+  
 },{timeStamps:true})
 module.exports  = mongoose.model('Whislist',whislistSchema)

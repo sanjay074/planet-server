@@ -1,121 +1,66 @@
 const mongoose = require("mongoose");
-const Joi = require("joi");
 const Product = require("../models/Product");
 const Whislist = require("../models/whislist");
 
-// Joi schema for addTowhislist
-const addToWishlistSchema = Joi.object({
-  products: Joi.array()
-    .items(
-      Joi.object({
-        productId: Joi.string()
-          .required()
-          .custom((value, helpers) => {
-            if (!mongoose.Types.ObjectId.isValid(value)) {
-              return helpers.message("Invalid product ID format");
-            }
-            return value;
-          }),
-        quantity: Joi.number().integer().min(1).required(),
-      })
-    )
-    .required()
-    .messages({
-      "array.base": "Products should be an array",
-      "array.min": "Products array should not be empty",
-    }),
-});
-
-// Joi schema for getWhishList
-const getWishlistSchema = Joi.object({
-  id: Joi.string()
-    .required()
-    .custom((value, helpers) => {
-      if (!mongoose.Types.ObjectId.isValid(value)) {
-        return helpers.message("Invalid ID format");
-      }
-      return value;
-    }),
-});
-
-// Joi schema for deleteWhislist
-const deleteWishlistSchema = Joi.object({
-  productId: Joi.string()
-    .required()
-    .custom((value, helpers) => {
-      if (!mongoose.Types.ObjectId.isValid(value)) {
-        return helpers.message("Invalid product ID format");
-      }
-      return value;
-    }),
-});
-
 const addTowhislist = async (req, res) => {
   try {
-    // Validate the request body using Joi schema
-    const { error, value } = addToWishlistSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
+    const userId =req.userId;
+    const productToadded =req.body.Products;
+
+    if(!Array.isArray(productToadded) || productToadded.length === 0){
+      return res.status(400).send({
+        succes:false,
+        message:"Products array is not available"
+
+      })
+    }
+    //whislist cart creation 
+    let mywhislist =await Whislist.findOne({userId})
+
+    if(!mywhislist){
+      mywhislist = new Whislist ({userId,cartItems:[]})
     }
 
-    const userId = req.userId;
-    const productToAdd = value.products; // Use validated value 
-
-    let mywhislist = await Whislist.findOne({ userId });
-    if (!mywhislist) {
-      mywhislist = new Whislist({ userId, cartItems: [] });
-    }
-
-    for (const productData of productToAdd) {
-      const { productId, quantity } = productData;
-
-      const product = await Product.findById(productId);
-      if (!product) {
+    for(const productData of productToadded){
+      const {productId} = productData;
+      if(!mongoose.Types.ObjectId.isValid(productId)){
         return res.status(400).send({
-          success: false,
-          message: "This product is not available",
-        });
+          succes:false,
+          message:"this id is not valid"
+        })
       }
-
-      if (product.quantity < quantity) {
+      const product =await Product.findById(productId)
+      if(!product){
         return res.status(400).send({
-          success: false,
-          message: "Stock is not available for this product",
-        });
+          success:false,
+          message:"Product is not avalailable"
+        })
       }
+      
+          // Check if the product is already in the cart
+          const itemIndex = mywhislist.cartItems.findIndex(
+            (item) => item.productId.toString() === productId
+        );
 
-      const itemIndex = mywhislist.cartItems.findIndex(
-        (item) => item.productId.toString() === productId
-      );
-      if (itemIndex > -1) {
-        mywhislist.cartItems[itemIndex].quantity += quantity;
-      } else {
-        mywhislist.cartItems.push({ productId, quantity });
-      }
+        if (itemIndex > -1) {
+            return res.status(400).send({
+                success: false,
+                message: `Product already added to cart: ${productId}`,
+            });
+        } else {
+
+            mywhislist.cartItems.push({ productId});
+        }
     }
 
-    let totalPrice = 0;
-    for (const item of mywhislist.cartItems) {
-      const product = await Product.findById(item.productId);
-      if (!product) {
-        return res.status(400).send({
-          success: false,
-          message: "Product is not available",
-        });
-      }
-      totalPrice += product.basePrice * item.quantity;
-    }
-    mywhislist.totalPrice = totalPrice;
+    await mywhislist.save()
 
-    await mywhislist.save();
 
-    return res.status(200).json({
+      return res.status(200).json({
       success: true,
-      message: "Your wishlist was created successfully",
+      message: "Your wishlist  created successfully",
     });
+
   } catch (error) {
     return res.status(500).send({
       success: false,
@@ -124,33 +69,37 @@ const addTowhislist = async (req, res) => {
     });
   }
 };
-
+//get whislist
 const getWhishList = async (req, res) => {
   try {
-    // Validate the request params using Joi schema
-    const { error, value } = getWishlistSchema.validate(req.params);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
+      const userId = req.userId
+  
+      if(!mongoose.Types.ObjectId.isValid(userId)){
+         return res.status(400).send({
+         success:false,
+         message:"user id invalid"
+    })
+  }
+
+  if(!userId){
+      return res.status(400).send({
+      success:false,
+      message:"user id is not available"
+    })
+  } 
+  const myWhilist = await Whislist.findOne({userId}).populate('cartItems.productId','name description finalPrice basePrice images size discountPrice')
+    if(!myWhilist){
+    return res.status(400).send({
+      success:false,
+      message:"No whislist cart is found"
+    })
     }
-
-    const _id = value.id; // Use validated value
-
-    const data = await Whislist.findOne({ _id });
-    if (!data) {
-      return res.status(200).send({
-        success: true,
-        message: "No data found in the wishlist",
-      });
-    }
-
     return res.status(200).send({
-      success: true,
-      message: "Here is your data",
-      data,
-    });
+      success:true,
+      message:"here is your all data",
+      myWhilist
+    })
+    
   } catch (error) {
     return res.status(500).send({
       success: false,
@@ -160,57 +109,37 @@ const getWhishList = async (req, res) => {
   }
 };
 
+
+
 const deleteWhislist = async (req, res) => {
   try {
-    // Validate the request body using Joi schema
-    const { error, value } = deleteWishlistSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details[0].message,
-      });
-    }
+    
+    //id from params
+    const cartId = req.params.id
 
-    const userId = req.userId;
-    const { productId } = value; // Use validated value
-
-    let myWhislist = await Whislist.findOne({ userId });
-    if (!myWhislist) {
-      return res.status(400).json({
-        success: false,
-        message: "No wishlist found",
-      });
-    }
-
-    const itemIndex = myWhislist.cartItems.findIndex(
-      (item) => item.productId.toString() === productId
-    );
-    if (itemIndex === -1) {
+    //validate cart id 
+    if(!mongoose.Types.ObjectId.isValid(cartId)){
       return res.status(400).send({
-        success: false,
-        message: "No product found in this wishlist",
-      });
+        success:false,
+        message:`invalid cartId`,
+      })
     }
-
-    if (myWhislist.cartItems[itemIndex].quantity > 1) {
-      myWhislist.cartItems[itemIndex].quantity -= 1;
-    } else {
-      myWhislist.cartItems.splice(itemIndex, 1);
+   
+   //delete the cart     
+    const deleteCart = await Whislist.findByIdAndDelete(cartId)
+    //validation
+    if(!deleteCart){
+        return res.status(400).send({
+        succes:false,
+        message:"no cart available"
+      })
     }
-
-    let totalPrice = 0;
-    for (const item of myWhislist.cartItems) {
-      const product = await Product.findById(item.productId);
-      totalPrice += product.basePrice * item.quantity;
-    }
-    myWhislist.totalPrice = totalPrice;
-
-    await myWhislist.save();
 
     return res.status(200).send({
-      success: true,
-      message: "Your item was successfully removed from the wishlist",
-    });
+      succes:true,
+      message:"whislist cart deleted successfully"
+    })
+   
   } catch (error) {
     return res.status(500).send({
       success: false,
@@ -220,4 +149,58 @@ const deleteWhislist = async (req, res) => {
   }
 };
 
-module.exports = { addTowhislist, getWhishList, deleteWhislist };
+const deleteSingleItemWhislist = async(req,res)=>{
+ try{
+  const userId = req.userId;
+  const { productId } = req.body;
+
+  // Validate productId
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).send({
+      success: false,
+      message: `Invalid product Id: ${productId}`
+    });
+  }
+
+  // Find the user's cart
+  let myWhilist = await Whislist.findOne({ userId });
+  if (!myWhilist) {
+    return res.status(404).send({
+      success: false,
+      message: "Whislist not found"
+    });
+  }
+
+  // Find the product index in the cart
+  const itemIndex = myWhilist.cartItems.findIndex(item => 
+    item.productId.toString() === productId);
+  if (itemIndex === -1) {
+    return res.status(404).send({
+      success: false,
+      message: `Product not found in whislist cart: ${productId}`
+    });
+  }
+
+  // Decrease the quantity or remove the product if quantity is 1
+  if (myWhilist.cartItems[itemIndex].quantity > 1) {
+    myWhilist.cartItems[itemIndex].quantity -= 1;
+  } else {
+    myWhilist.cartItems.splice(itemIndex, 1);
+  }
+
+    await  myWhilist.save()
+    return res.status(200).send({
+    success:true,
+    message:"product   Deleted successfully from whislist"
+  })
+
+ }catch(error){
+  return res.status(400).send({
+    succes:false,
+    message:"your single item deleted successfully"
+  })
+ }
+
+
+}
+module.exports = { addTowhislist, getWhishList, deleteWhislist,deleteSingleItemWhislist };

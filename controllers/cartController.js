@@ -60,13 +60,15 @@ const addToCart = async (req, res) => {
           }
       }
 
+
       await cart.save();
 
       res.status(200).json({
           success: true,
           message: "Items added to cart",
       });
-  } catch (error) {
+
+  }catch (error) {
       res.status(500).send({
           success: false,
           message: "Internal server error",
@@ -74,6 +76,7 @@ const addToCart = async (req, res) => {
       });
   }
 };
+
 
 
 //get the cart 
@@ -100,8 +103,6 @@ const getcart = async (req, res) => {
           return res.status(404).json({ message: 'Cart not found' });
       }
       
-      console.log(cart)
-
       let subtotal = 0;
       let totalDiscount = 0;
       let total=0;
@@ -282,13 +283,6 @@ const  deleteCartController =async(req,res)=>{
       succes:true,
       message:"cart deleted successfully"
     })
-
-
-
-
-
-
-
   }catch(error){
     return res.status(500).send({
       success:false,
