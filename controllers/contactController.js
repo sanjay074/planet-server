@@ -1,17 +1,10 @@
-const Joi = require('joi');
-const Contact = require('../models/contactUs');
-const {sendEmail} = require("../services/commonFunction")
-async function contactForm (req, res)  {
-  try {
-    // Define Joi schema
-    const schema = Joi.object({
-      name: Joi.string().trim().required(),
-      mobile: Joi.string().trim().pattern(/^\d{10}$/).message('Mobile number must be a 10-digit number').required(),
-      email: Joi.string().email().trim().lowercase().required(),
-      message: Joi.string().max(250).message('Message should not exceed 250 characters').required()
-    });
 
-    const { error } = schema.validate(req.body);
+const Contact = require('../models/contactUs');
+const {sendEmail} = require("../services/commonFunction");
+const { Contactschema } = require('../validations/validation');
+async function contactForm (req, res)  {
+  try {   
+    const { error } = Contactschema.validate(req.body);
     if (error) {
       return res.status(400).send({
         success: false,
@@ -27,8 +20,6 @@ async function contactForm (req, res)  {
       email,
       message
     });
- 
-    
     const emailData = {
       from: 'noreply@node-react.com',
       to: 'planet.clothingsales@gmail.com', 
@@ -78,6 +69,4 @@ const getAllData = async(req,res)=>{
 
   }
 }
-
-
 module.exports = {contactForm,getAllData};

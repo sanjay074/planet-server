@@ -1,21 +1,10 @@
-const Joi = require('joi');
-
 const mongoose = require("mongoose");
 const Profile = require('../../models/Profile');
 const Users = require("../../models/user");
+const { schema } = require("../../validations/validation");
 //create profile
 async function createProfileController(req,res){
    try{
- // Define Joi schema
- const schema = Joi.object({
-    mobileNumber: Joi.string().required(),
-    fullName: Joi.string().required(),
-    email: Joi.string().email().required(),
-    gender: Joi.string().valid('male', 'female', 'other').optional(),
-    birthday: Joi.date().optional(),
-    alternateNumber: Joi.string().optional()
-  });
-
   // Validate the request body against the schema
   const { error } = schema.validate(req.body);
   if (error) {
@@ -163,7 +152,8 @@ const getUserProfile = async (req,res)=>{
     const userData = await Users.findById(userId);
     return res.status(200).json({
        status:true,
-       message:"Get user details successfully",userData
+       message:"Get user details successfully",
+       userData
     })
 
   }catch(error){

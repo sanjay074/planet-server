@@ -3,7 +3,6 @@ const Brand  =require("../models/Brand");
 const searchController = async (req, res) => {
   try {
     const { query } = req.body;
-
     // Check if query is provided
     if (!query) {
       return res.status(400).send({

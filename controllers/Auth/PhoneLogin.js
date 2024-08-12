@@ -1,6 +1,15 @@
-const axios =require("axios")
+const axios =require("axios");
+const { phoneLoginSchema } = require("../../validations/validation");
 
 exports.phoneLogin = (req, res) => {
+  const { error } = phoneLoginSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+
 
 if (req.body.phone === "9999999999" || req.body.phone === "8888888888") {
       return res.status(200).send({

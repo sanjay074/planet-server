@@ -123,21 +123,181 @@ const productValidationSchema = Joi.object({
       "any.required": "Product final price is required",
     }),
   images: Joi.array().items(Joi.string()),
-  // images: Joi.array()
-  //   .items(Joi.string().required())
-  //   .min(1)
-  //   .required()
-  //   .messages({
-  //     "array.base": "Product images must be an array",
-  //     "array.min": "At least one picture is required",
-  //     "any.required": "Product images are required",
-  //   }),
   active: Joi.boolean().default(true),
 });
+
+
+//register Scehma
+const signupSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+      'string.email': 'Invalid email format',
+      'any.required': 'Email is required'
+  }),
+  password: Joi.string().min(6).required().messages({
+      'string.min': 'Password should be at least 6 characters long',
+      'any.required': 'Password is required'
+  }),
+  isAdmin: Joi.boolean().messages({
+      'boolean.base': 'isAdmin should be a boolean value',
+      'any.required': 'isAdmin is required'
+  })
+});
+
+
+
+
+//loginSchema
+
+const loginSchema =Joi.object({
+     email: Joi.string().email().required().messages({
+      'string.email': 'Invalid email format',
+      'any.required': 'Email is required'
+}),
+    password: Joi.string().min(6).required().messages({
+    'string.min': 'Password should be at least 6 characters long',
+    'any.required': 'Password is required'
+}),
+})
+
+//phone Sechema
+const phoneLoginSchema = Joi.object({
+  phone: Joi.string()
+    .pattern(/^[0-9]{10}$/) // Ensures the phone number is exactly 10 digits
+    .required()
+    .messages({
+      'string.pattern.base': 'Phone number must be exactly 10 digits',
+      'any.required': 'Phone number is required'
+    })
+}); 
+
+
+// Define the validation schema
+const otpValidationSchema = Joi.object({
+  phone: Joi.string().pattern(/^\d{10}$/).required(), // Validate 10-digit phone number
+  otp: Joi.string().required(), // OTP should be a string
+  details: Joi.string().required(), // Additional details (e.g., request ID)
+});
+
+// Define Joi Profile Schema
+const schema = Joi.object({
+  mobileNumber: Joi.string().required(),
+  fullName: Joi.string().required(),
+  email: Joi.string().email().required(),
+  gender: Joi.string().valid('male', 'female', 'other').optional(),
+  birthday: Joi.date().optional(),
+  alternateNumber: Joi.string().optional()
+});
+
+
+  // Define Joi schema
+  const Addresschema = Joi.object({
+    name: Joi.string().trim().required().messages({
+      "string.empty": "Name is required",
+      "any.required": "Name is required"
+    }),
+    mobile: Joi.string().trim().pattern(/^\d{10}$/).message('Mobile number must be a 10-digit number').required(),
+    email: Joi.string().email().trim().lowercase().required().messages({
+      "string.email": "Valid email is required",
+      "any.required": "Email is required"
+    }),
+    Pincode: Joi.string().trim().required().messages({
+      "string.empty": "Pincode is required",
+      "any.required": "Pincode is required"
+    }),
+    Landmark: Joi.string().trim().required().messages({
+      "string.empty": "Landmark is required",
+      "any.required": "Landmark is required"
+    }),
+    district: Joi.string().trim().required().messages({
+      "string.empty": "District is required",
+      "any.required": "District is required"
+    }),
+    state: Joi.string().trim().required().messages({
+      "string.empty": "State is required",
+      "any.required": "State is required"
+    }),
+    addressAs: Joi.string().trim().valid('home', 'office').required().messages({
+      "any.only": "Address type must be 'home' or 'office'",
+      "any.required": "Address type is required"
+    })
+  });
+
+  // Validation schema for adding items to the cart
+const addToCartSchema = Joi.object({
+  products: Joi.array().items(
+      Joi.object({
+          productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+          quantity: Joi.number().positive().required()
+      })
+  ).required(),
+  action: Joi.string().valid('increment', 'decrement')
+});
+ // Define Joi schema
+ const Contactschema = Joi.object({
+  name: Joi.string().trim().required(),
+  mobile: Joi.string().trim().pattern(/^\d{10}$/).message('Mobile number must be a 10-digit number').required(),
+  email: Joi.string().email().trim().lowercase().required(),
+  message: Joi.string().max(250).message('Message should not exceed 250 characters').required()
+});
+
+// Validation schema for creating an order
+const JoiOrderSchema = Joi.object({
+  addressId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+  products: Joi.array().items(
+      Joi.object({
+          productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+          quantity: Joi.number().integer().positive().required()
+      })
+  ).required()
+});
+
+// Validation schema for creating a rating and review
+const createRatingSchema = Joi.object({
+  productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+  rating: Joi.number().integer().min(1).max(5).required(),
+  review: Joi.string().optional()
+});
+
+
+// Joi validation schemas
+const createReturnSchema = Joi.object({
+  orderId: Joi.string().required(),
+  reason: Joi.string().valid('received wrong item', 'quality of product not matched', 'product is missing', 'don’t like the size').required(),
+  message: Joi.string().optional()
+});
+
+const approveReturnSchema = Joi.object({
+  returnOrderId: Joi.string().required()
+});
+
+// Validation schema for adding products to the wishlist
+const addToWishlistSchema = Joi.object({
+  Products: Joi.array().items(
+      Joi.object({
+          productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required()
+      }).required()
+  ).min(1).required()
+});
+
+
+
 
 module.exports = {
   categoryValidationSchema,
   subCategoryValidationSchema,
   brandValidationSchema,
   productValidationSchema,
+  signupSchema,
+  loginSchema,
+  phoneLoginSchema,
+  otpValidationSchema,
+  schema,
+  Addresschema,
+  addToCartSchema,
+  Contactschema,
+  JoiOrderSchema,
+  createRatingSchema,
+  createReturnSchema,
+  approveReturnSchema,
+  addToWishlistSchema
 };
