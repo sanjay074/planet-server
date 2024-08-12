@@ -1,22 +1,24 @@
 const admin = require("../../models/admin")
 const bcrypt =require("bcrypt")
 const jwt = require('jsonwebtoken');
+const { signupSchema, loginSchema } = require("../../validations/validation");
+
 
 //sign-up
 async function singupController(req,res){
 try{
 
-    //req from the body
-    const {email,password,isAdmin} = req.body 
-    //all fields check
-    if(!email || !password){
-            return res.status(400).send({
-            success:false,
-            message:"Please fill all  the fields"
-        })
+    const {error} =signupSchema.validate(req.body)
+    if(error){
+          return res.status(400).send({
+            success: false,
+            message: error.details[0].message
+        });
     }
 
-    //check mail 
+    //req from the body
+    const {email,password,isAdmin} = req.body 
+  
     const mailCheck = await admin.findOne({email})
     if(mailCheck){
             return res.status(401).send({
@@ -51,9 +53,18 @@ try{
 
 }
 }
+
 //-----------------------sign-in ------------------
 async function signinController(req,res){
     try{
+        const {error} =loginSchema.validate(req.body)
+        if(error){
+              return res.status(400).send({
+                success: false,
+                message: error.details[0].message
+            });
+        }
+    
     //req data from body 
     const {email,password} =req.body  
     

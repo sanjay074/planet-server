@@ -22,30 +22,6 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-// const uploadMultipleImagesOnCloudinary = async (localFilePaths) => {
-//   try {
-//     if (!localFilePaths || !Array.isArray(localFilePaths)) return [];
-
-//     const uploadPromises = localFilePaths.map((filePath) =>
-//       cloudinary.uploader.upload(filePath, { resource_type: "auto" })
-//     );
-
-//     const responses = await Promise.all(uploadPromises);
-
-//     // Clean up local files
-//     localFilePaths.forEach((filePath) => fs.unlinkSync(filePath));
-
-//     console.log("Files uploaded successfully", responses);
-//     return responses;
-//   } catch (error) {
-//     console.error("Error uploading files", error);
-
-//     // Clean up local files in case of an error
-//     localFilePaths.forEach((filePath) => fs.unlinkSync(filePath));
-
-//     return [];
-//   }
-// };
 
 const deleteFromCloudinary = async (publicId) => {
   try {
@@ -74,17 +50,17 @@ const uploadMultipleImagesOnCloudinary = async (localFilePaths) => {
     const responses = await Promise.all(uploadPromises);
 
     // Clean up local files
-    console.log(localFilePaths, "localFilePaths");
+    
     localFilePaths.forEach((filePath) => {
       try {
         fs.unlinkSync(filePath);
-        console.log("file deleted successfully locally");
+       
       } catch (err) {
         console.error("Error deleting local file", err);
       }
     });
 
-    console.log("Files uploaded successfully", responses);
+    
     return responses;
   } catch (error) {
     console.error("Error uploading files", error);
@@ -93,7 +69,7 @@ const uploadMultipleImagesOnCloudinary = async (localFilePaths) => {
     localFilePaths.forEach((filePath) => {
       try {
         fs.unlinkSync(filePath);
-        console.log("File deleted successfully locally");
+        
       } catch (err) {
         console.error("Error deleting local file", err);
       }
@@ -118,7 +94,7 @@ const deleteMultipleImageFromCloudinary = async (publicIds) => {
       cloudinary.uploader.destroy(publicId, { resource_type: "image" })
     );
     const deleteResults = await Promise.all(deletePromises);
-    console.log("Files deleted successfully from Cloudinary", deleteResults);
+    
   } catch (error) {
     console.error("Error deleting files from Cloudinary", error);
     throw error; // Propagate the error back to handle it appropriately in the calling function

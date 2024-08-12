@@ -1,45 +1,12 @@
-const Joi = require("joi");
 const Address = require("../models/userAddress");
-
 const mongoose = require("mongoose");
+
+const { Addresschema } = require("../validations/validation");
 
 const createAddress = async (req, res) => {
   try {
-    // Define Joi schema
-    const schema = Joi.object({
-      name: Joi.string().trim().required().messages({
-        "string.empty": "Name is required",
-        "any.required": "Name is required"
-      }),
-      mobile: Joi.string().trim().pattern(/^\d{10}$/).message('Mobile number must be a 10-digit number').required(),
-      email: Joi.string().email().trim().lowercase().required().messages({
-        "string.email": "Valid email is required",
-        "any.required": "Email is required"
-      }),
-      Pincode: Joi.string().trim().required().messages({
-        "string.empty": "Pincode is required",
-        "any.required": "Pincode is required"
-      }),
-      Landmark: Joi.string().trim().required().messages({
-        "string.empty": "Landmark is required",
-        "any.required": "Landmark is required"
-      }),
-      district: Joi.string().trim().required().messages({
-        "string.empty": "District is required",
-        "any.required": "District is required"
-      }),
-      state: Joi.string().trim().required().messages({
-        "string.empty": "State is required",
-        "any.required": "State is required"
-      }),
-      addressAs: Joi.string().trim().valid('home', 'office').required().messages({
-        "any.only": "Address type must be 'home' or 'office'",
-        "any.required": "Address type is required"
-      })
-    });
-
     // Validate the request body against the schema
-    const { error } = schema.validate(req.body);
+    const { error } = Addresschema.validate(req.body);
     if (error) {
       return res.status(400).send({
         success: false,
@@ -51,16 +18,7 @@ const createAddress = async (req, res) => {
     const { name, mobile, email, Pincode, Landmark, district, state, addressAs } = req.body;
 
     // Save the data to the database
-    const userAddress = new Address({
-      name,
-      mobile,
-      email,
-      Pincode,
-      Landmark,
-      district,
-      state,
-      addressAs
-    });
+    const userAddress = new Address({name,mobile,email,Pincode,Landmark,district,state,addressAs });
     const savedAddress = await userAddress.save();
 
     // Successful response
@@ -184,9 +142,7 @@ try{
         message: "Error deleting address",
         error: error.message
       });
-
 }
-
 }
 module.exports = {
   createAddress,

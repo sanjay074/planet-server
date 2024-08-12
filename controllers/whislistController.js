@@ -1,9 +1,19 @@
 const mongoose = require("mongoose");
 const Product = require("../models/Product");
 const Whislist = require("../models/whislist");
+const { addToWishlistSchema } = require("../validations/validation");
+
 
 const addTowhislist = async (req, res) => {
   try {
+     // Validate request body
+     const { error } = addToWishlistSchema.validate(req.body);
+     if (error) {
+       return res.status(400).send({
+         success: false,
+         message: error.details[0].message
+       });
+     }
     const userId =req.userId;
     const productToadded =req.body.Products;
 
@@ -29,7 +39,7 @@ const addTowhislist = async (req, res) => {
           message:"this id is not valid"
         })
       }
-      const product =await Product.findById(productId)
+      const product = await Product.findById(productId)
       if(!product){
         return res.status(400).send({
           success:false,

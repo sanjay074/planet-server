@@ -1,16 +1,25 @@
 const mongoose = require("mongoose");
 const Order = require("../models/Order");
-const Cart = require("../models/Cart");
 const Address = require("../models/userAddress");
 const Product = require("../models/Product");
+const { JoiOrderSchema } = require("../validations/validation");
 
 // Joi validation schemas
 
 const createOrder = async (req, res) => {
   try {
-    const userId = req.userId;
+      // Validate request body
+      const { error } = JoiOrderSchema.validate(req.body);
+      if (error) {
+        return res.status(400).send({
+          success: false,
+          message: error.details[0].message
+        });
+      }
+  
 
-   
+
+    const userId = req.userId;
     const { addressId, products } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(addressId)) {
@@ -160,13 +169,7 @@ const getmyOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
   try {
     const id = req.params.id;
-    const { error } = updateOrderSchema.validate(req.body);
-    if (error) {
-      return res.status(400).send({
-        success: false,
-        message: error.details[0].message
-      });
-    }
+   
     const { status } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {

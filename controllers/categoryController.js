@@ -29,6 +29,7 @@ async function createCategory(req, res) {
   }
 }
 
+
 async function getAllCategory(req, res) {
   try {
     const response = await Category.find({});

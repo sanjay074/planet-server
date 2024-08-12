@@ -1,35 +1,39 @@
 const Product = require('../models/Product');
 const Cart = require('../models/Cart'); 
 const mongoose = require("mongoose");
+const { addToCartSchema } = require('../validations/validation');
 
 const addToCart = async (req, res) => {
   try {
+      // Validate request body
+      const { error } = addToCartSchema.validate(req.body);
+      if (error) {
+        return res.status(400).send({
+          success: false,
+          message: error.details[0].message
+        });
+      }
       const userId = req.userId;
       const productsToAdd = req.body.products;
     //  console.log(productsToAdd)
-
       if (!Array.isArray(productsToAdd) || productsToAdd.length === 0) {
           return res.status(400).send({
               success: false,
               message: "Invalid products array",
           });
       }
-
       let cart = await Cart.findOne({ userId });
       if (!cart) {
           cart = new Cart({ userId, cartItems: [] });
       }
-
       for (const productData of productsToAdd) {
           const { productId, quantity } = productData;
-
           if (!mongoose.Types.ObjectId.isValid(productId)) {
               return res.status(400).send({
                   success: false,
                   message: `Invalid product Id: ${productId}`,
               });
           }
-
           const product = await Product.findById(productId);
           if (!product) {
               return res.status(404).send({
@@ -37,19 +41,16 @@ const addToCart = async (req, res) => {
                   message: `Product not available: ${productId}`,
               });
           }
-
           if (product.quantity < quantity) {
               return res.status(400).send({
                   success: false,
                   message: `Stock not available for product: ${productId}`,
               });
           }
-
           // Check if the product is already in the cart
           const itemIndex = cart.cartItems.findIndex(
               (item) => item.productId.toString() === productId
           );
-
           if (itemIndex > -1) {
               return res.status(400).send({
                   success: false,
@@ -59,15 +60,12 @@ const addToCart = async (req, res) => {
               cart.cartItems.push({ productId, quantity });
           }
       }
-
-
       await cart.save();
 
       res.status(200).json({
           success: true,
           message: "Items added to cart",
       });
-
   }catch (error) {
       res.status(500).send({
           success: false,
@@ -76,14 +74,9 @@ const addToCart = async (req, res) => {
       });
   }
 };
-
-
-
 //get the cart 
-
 const getcart = async (req, res) => {
   try {
-
       const userId = req.userId;
       if (!mongoose.Types.ObjectId.isValid(userId)) {
           return res.status(400).json({
@@ -97,48 +90,36 @@ const getcart = async (req, res) => {
               message: 'User ID is required'
              });
       }
-    
       const cart = await Cart.findOne({userId}).populate('cartItems.productId', 'name description finalPrice basePrice images size discountPrice');
       if (!cart) {
           return res.status(404).json({ message: 'Cart not found' });
       }
-      
       let subtotal = 0;
       let totalDiscount = 0;
       let total=0;
-
       cart.cartItems.forEach(item => {
           const itemSubtotal = item.productId.finalPrice * item.quantity;
           const itemDiscount = ((item.productId.basePrice*item.productId.discountPrice)/100);
-          const itemtotal =item.productId.basePrice*item.quantity
-          
+          const itemtotal =item.productId.basePrice*item.quantity 
           total   +=itemtotal;
           subtotal += itemSubtotal;
           totalDiscount += itemDiscount;
       });
-      
       const deliveryCharges = 93;
       const totalAmount = subtotal  + deliveryCharges ;
-      
-      
-
       const orderSummary = {
         total,
         discount: totalDiscount,
         subtotal,
         deliveryCharges,
         totalPrice:totalAmount
-    };
-  
-     
-   
+    }; 
     return res.status(200).json({
       success:true,
       message:"here is your all data", 
       cart,
       orderSummary
        });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -146,16 +127,11 @@ const getcart = async (req, res) => {
   });
   }
 }
-
-
-
 //delete from cart 
-
 const deleteFromCart = async (req, res) => {
   try {
     const userId = req.userId;
     const { productId } = req.body;
-
     // Validate productId
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).send({
@@ -163,7 +139,6 @@ const deleteFromCart = async (req, res) => {
         message: `Invalid product Id: ${productId}`
       });
     }
-
     // Find the user's cart
     let cart = await Cart.findOne({ userId });
     if (!cart) {
@@ -172,24 +147,21 @@ const deleteFromCart = async (req, res) => {
         message: "Cart not found"
       });
     }
-
     // Find the product index in the cart
     const itemIndex = cart.cartItems.findIndex(item => 
-      item.productId.toString() === productId);
-    if (itemIndex === -1) {
+         item.productId.toString() === productId);
+    if(itemIndex === -1) {
       return res.status(404).send({
         success: false,
         message: `Product not found in cart: ${productId}`
       });
     }
-
     // Decrease the quantity or remove the product if quantity is 1
     if (cart.cartItems[itemIndex].quantity > 1) {
       cart.cartItems[itemIndex].quantity -= 1;
     } else {
       cart.cartItems.splice(itemIndex, 1);
     }
-
     // Calculate the total price of the cart
     let totalPrice = 0;
     for (const item of cart.cartItems) {
@@ -197,10 +169,8 @@ const deleteFromCart = async (req, res) => {
       totalPrice += product.basePrice * item.quantity;
     }
     cart.totalPrice = totalPrice;
-
     // Save the updated cart
     await cart.save();
-
     res.status(200).json({
       success: true,
       message: "Item deleted successfully"
@@ -214,10 +184,16 @@ const deleteFromCart = async (req, res) => {
     });
   }
 };
-
-
 const updateItemQuantity = async (req, res) => {
   try {
+      // Validate request body
+      const { error } = addToCartSchema.validate(req.body);
+      if (error) {
+        return res.status(400).send({
+          success: false,
+          message: error.details[0].message
+        });
+      }
       const userId = req.userId;
       const { productId, action } = req.body;
       if(!mongoose.Types.ObjectId.isValid(productId)){
@@ -246,7 +222,6 @@ const updateItemQuantity = async (req, res) => {
       }
       await cart.save();
       return res.status(200).json({ success: true, message: 'Item quantity updated successfully' });
-
   } catch (error) {
       return res.status(500).json({
           success: false,
@@ -254,13 +229,10 @@ const updateItemQuantity = async (req, res) => {
       });
   }
 }
-
 const  deleteCartController =async(req,res)=>{
   try{
-   
     //id from params
     const cartId =req.params.id
-
     //validate cart id 
     if(!mongoose.Types.ObjectId.isValid(cartId)){
       return res.status(400).send({
@@ -268,7 +240,6 @@ const  deleteCartController =async(req,res)=>{
         message:`invalid cartId`,
       })
     }
-   
    //delete the cart     
     const deleteCart = await Cart.findByIdAndDelete(cartId)
     //validation
@@ -278,7 +249,6 @@ const  deleteCartController =async(req,res)=>{
         message:"no cart available"
       })
     }
-
     return res.status(200).send({
       succes:true,
       message:"cart deleted successfully"
@@ -289,7 +259,6 @@ const  deleteCartController =async(req,res)=>{
       message:"error in Deleting the cart",
       error:error.message
     })
-
   }
 }
 

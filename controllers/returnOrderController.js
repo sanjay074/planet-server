@@ -2,18 +2,8 @@ const mongoose = require("mongoose");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const returnOrder = require("../models/returnOrder");
-const Joi = require('joi');
+const { createReturnSchema, approveReturnSchema } = require("../validations/validation");
 
-// Joi validation schemas
-const createReturnSchema = Joi.object({
-  orderId: Joi.string().required(),
-  reason: Joi.string().valid('received wrong item', 'quality of product not matched', 'product is missing', 'don’t like the size').required(),
-  message: Joi.string().optional()
-});
-
-const approveReturnSchema = Joi.object({
-  returnOrderId: Joi.string().required()
-});
 
 const createReturn = async (req, res) => {
   try {

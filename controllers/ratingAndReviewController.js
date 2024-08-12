@@ -1,9 +1,19 @@
 const { default: mongoose } = require("mongoose")
 const Order = require("../models/Order")
-const ratingReview = require("../models/rating&review")
+const ratingReview = require("../models/rating&review");
+const { createRatingSchema } = require("../validations/validation");
+
 
 const createRating =async(req,res)=>{
     try{
+       // Validate request body
+    const { error } = createRatingSchema.validate(req.body);
+    if (error) {
+      return res.status(400).send({
+        success: false,
+        message: error.details[0].message
+      });
+    }
         //req from body
         const userId = req.userId
         const {productId,rating,review}=req.body
