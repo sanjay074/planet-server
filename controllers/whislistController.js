@@ -144,7 +144,7 @@ const deleteWhislist = async (req, res) => {
         message:"no cart available"
       })
     }
-
+    
     return res.status(200).send({
       succes:true,
       message:"whislist cart deleted successfully"

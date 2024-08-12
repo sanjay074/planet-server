@@ -82,7 +82,7 @@ const updateAddress = async (req, res) => {
 
 const getAddress =async(req,res)=>{
     try{
-    // req id from params
+    //req id from params
     const id = req.params.id;
     if(!mongoose.Types.ObjectId.isValid(id)){
         return res.status(400).json({message:"Invalid address Id"})
@@ -134,7 +134,7 @@ try{
     })
 
 
-
+    
 }catch(error){
         // Error handling
          return res.status(500).send({
