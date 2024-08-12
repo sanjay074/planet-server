@@ -131,7 +131,7 @@ const getmyOrder = async (req, res) => {
         select: "name color brand size -_id"
       });
 
-    if (!orders.length) {
+    if (!orders.length == 0) {
       return res.status(400).send({
         success: false,
         message: "No orders found for the user"
@@ -202,7 +202,17 @@ const updateOrder = async (req, res) => {
 
 const newOrder = async(req,res)=>{
   try{
-    const recentOrder = await Order.find({}).sort({createdAt:-1})
+    const recentOrder = await Order.find({}).populate({
+      path:"orderItems.productId",
+      select:'name images  -_id'
+     })
+     .populate({
+      path:"address",
+      select:"name mobile email Pincode Landmark district state   -_id"
+
+     })
+   
+    .sort({createdAt:-1})
     return res.status(200).send({
       success:true,
       message:"here is your all recent data",
@@ -232,7 +242,16 @@ const  getRecentOrder = async(req,res)=>{
         $gte:startDay,
         $lte:EndofDay
       }
-    })
+    }).populate({
+      path:"orderItems.productId",
+      select:'name images  -_id'
+     })
+     .populate({
+      path:"address",
+      select:"name mobile email Pincode Landmark district state   -_id"
+
+     })
+  
     if(!myData){
       return res.status(500).send({
         success:false,
