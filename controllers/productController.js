@@ -22,7 +22,7 @@ async function createProduct(req, res) {
     }
 
     // Validate referenced IDs
-    const { category,subCategory,brand,footSize,size,basePrice,finalPrice} = value;
+    const { category,subCategory,brand,footSize,size,basePrice,finalPrice,pantSize} = value;
     if (
       !isValidObjectId(category) ||
       !isValidObjectId(subCategory) ||
@@ -82,17 +82,21 @@ async function createProduct(req, res) {
 
      return res.status(201).json({
       message: "New Product Created Successfully",
-      
       record: savedProduct,
     });
   }
 
+  //check the condition 
     else {
-    // Check for the files
-    if(!size){
+      const SubData =await SubCategory.findById(subCategory)
+      const SubCategoryName = SubData.name
+
+      if(SubCategoryName ==="Shirt"){
+     // Check for the files
+      if(!size){
       return res.status(400).send({
         success:false,
-        message:"Size is required"
+        message:"Shirt  Size is required"
       })
 
     }
@@ -121,6 +125,7 @@ async function createProduct(req, res) {
     // Create a new Product instance and save it
     const newProduct = new Product({
       ...value,
+      discountPrice,
       images: uploadResults.map((result) => result.secure_url),
     });
     const savedProduct = await newProduct.save();
@@ -131,10 +136,52 @@ async function createProduct(req, res) {
     });
     }
 
-    
-}
+    //pantsize subcategory 
+    else{
+      if(!pantSize){
+        return res.status(400).send({
+          success:false,
+          message:"pant size is required"
+        })
+      }
+       //images file check 
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
 
-   catch (error){  
+    // Collect local file paths
+    const localFilePaths = req.files.map((file) => file.path);
+    //console.log(localFilePaths, "localfilepaths");
+
+    // Upload images to Cloudinary
+    const uploadResults = await uploadMultipleImagesOnCloudinary(
+      localFilePaths
+    );
+
+    // Check if any upload failed
+    if (uploadResults.some((result) => !result)) {
+      return res
+        .status(500)
+        .json({ error: "Failed to upload one or more images" });
+    }
+
+    // Create a new Product instance and save it
+    const newProduct = new Product({
+      ...value,
+      discountPrice,
+      images: uploadResults.map((result) => result.secure_url),
+    });
+    const savedProduct = await newProduct.save();
+
+     return res.status(201).json({
+      message: "New Product Created Successfully",
+      record: savedProduct,
+    });
+    }
+  }
+ 
+    
+}catch (error){  
     console.error("Error creating product:", error);
     // Duplicate entry error handling
     if(error.code === 11000) {
