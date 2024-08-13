@@ -54,7 +54,13 @@ const addressSchema =  mongoose.Schema({
     required: [true, "Address type is required"],
     enum: ['home', 'office'],
     default: 'home'
+  },
+  fullAddress:{
+    type: String,
+    required: [true, "full Address type is required"],
+    trim:true
   }
+
 }, { timestamps: true });
 
 const Address = mongoose.model('Address', addressSchema);

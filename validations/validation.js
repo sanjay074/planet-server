@@ -219,7 +219,12 @@ const schema = Joi.object({
     addressAs: Joi.string().trim().valid('home', 'office').required().messages({
       "any.only": "Address type must be 'home' or 'office'",
       "any.required": "Address type is required"
+    }),
+    fullAddress: Joi.string().trim().message({
+      "string.empty": "fullAddress is required",
+      "any.required": "fullAddress is required"
     })
+
   });
 
   // Validation schema for adding items to the cart
