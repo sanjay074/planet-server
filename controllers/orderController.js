@@ -212,9 +212,7 @@ const newOrder = async(req,res)=>{
      .populate({
       path:"address",
       select:"name mobile email Pincode Landmark district state   -_id"
-
      })
-   
     .sort({createdAt:-1})
     return res.status(200).send({
       success:true,
@@ -275,5 +273,67 @@ const  getRecentOrder = async(req,res)=>{
     })
   }
 }
+const deleteSingleOrder =async(req,res)=>{
+  try{
+    const id =req.params._id;
 
-module.exports = { createOrder, getAllOrder, getmyOrder, updateOrder,newOrder,getRecentOrder};
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(400).send({
+        success:false,
+        message:"this id is not valid"
+      })
+    }
+    const deleteItem = await Order.findByIdAndDelete(id)
+    
+    return  res.status(200).send({
+      success:true,
+      message:"order Deleted successfully"
+    })
+
+  }catch(error){
+      return res.status(400).send({
+      success:false,
+      message:"error  in deleting order",
+      error:error.message
+
+    })
+  }
+}
+
+const getUserSingleOrder =async(req,res)=>{
+  try{
+    const  id = req.params._id
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(400).send({
+        success:false,
+        message:"this id is not valid"
+      })
+    }
+
+  let getsingleData = await Order.findById(id)
+   .populate({
+    path:"orderItems.productId",
+    select:'name images  -_id'
+   })
+   .populate({
+    path:"address",
+    select:"name mobile email Pincode Landmark district state   -_id"
+   })
+
+    return res.status(200).send({
+     success:true,
+     message:"your data is getting successfully",
+     getsingleData
+   })
+  }catch(error){
+    return res.status(400).send({
+      success:false,
+      message:"error  in geting the order",
+      error:error.message
+  })
+}
+}
+module.exports = { createOrder,
+   getAllOrder, getmyOrder, updateOrder,newOrder,
+   getRecentOrder,deleteSingleOrder,getUserSingleOrder
+  };
