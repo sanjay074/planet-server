@@ -1,6 +1,5 @@
 const Address = require("../models/userAddress");
 const mongoose = require("mongoose");
-
 const { Addresschema } = require("../validations/validation");
 
 const createAddress = async (req, res) => {
@@ -15,10 +14,10 @@ const createAddress = async (req, res) => {
     }
 
     // Destructure validated values from the request body
-    const { name, mobile, email, Pincode, Landmark, district, state, addressAs } = req.body;
+    const { name, mobile, email, Pincode, Landmark, district, state, addressAs, fullAddress } = req.body;
 
     // Save the data to the database
-    const userAddress = new Address({name,mobile,email,Pincode,Landmark,district,state,addressAs });
+    const userAddress = new Address({name,mobile,email,Pincode,Landmark,district,state,addressAs,fullAddress });
     const savedAddress = await userAddress.save();
 
     // Successful response
@@ -41,7 +40,7 @@ const createAddress = async (req, res) => {
 const updateAddress = async (req, res) => {
   try {
     // Destructure validated values from the request body
-    const { name, mobile, email, Pincode, Landmark, district, state, addressAs } = req.body;
+    const { name, mobile, email, Pincode, Landmark, district, state, addressAs,fullAddress} = req.body;
 
     // req id from params
     const  id = req.params.id;
@@ -53,7 +52,7 @@ const updateAddress = async (req, res) => {
     // Update the address in the database
     const updatedAddress = await Address.findByIdAndUpdate(
       id,
-      { name, mobile, email, Pincode, Landmark, district, state, addressAs },
+      { name, mobile, email, Pincode, Landmark, district, state, addressAs,fullAddress},
       { new: true }
     );
 

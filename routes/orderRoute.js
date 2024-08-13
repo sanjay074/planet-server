@@ -1,5 +1,5 @@
 const express =require("express")
-const { createOrder, getAllOrder, getmyOrder, updateOrder, newOrder, getRecentOrder } = require("../controllers/orderController")
+const { createOrder, getAllOrder, getmyOrder, updateOrder, newOrder, getRecentOrder, deleteSingleOrder, getUserSingleOrder } = require("../controllers/orderController")
 const { authMiddleware,isAdminMd} = require("../middleware/authMiddle")
 
 const orderRoute = express.Router()
@@ -17,8 +17,11 @@ orderRoute.get("/getNewOrder",authMiddleware,isAdminMd,newOrder)
 //get recent order 
 orderRoute.get("/getRecentOrder",authMiddleware,isAdminMd,getRecentOrder)
 
+//delete order 
+orderRoute.delete("/deleteSingleItem/:_id",authMiddleware,isAdminMd,deleteSingleOrder) 
 
 
-
+//get Single order 
+orderRoute.get("/getSingleOrder/:_id",authMiddleware,isAdminMd,getUserSingleOrder)
 
 module.exports = orderRoute
