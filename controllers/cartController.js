@@ -98,9 +98,9 @@ const getcart = async (req, res) => {
       let totalDiscount = 0;
       let total=0;
       cart.cartItems.forEach(item => {
-          const itemSubtotal = item.productId.finalPrice * item.quantity;
-          const itemDiscount = ((item.productId.basePrice*item.productId.discountPrice)/100);
-          const itemtotal =item.productId.basePrice*item.quantity 
+          const itemSubtotal = item?.productId?.finalPrice * item?.quantity;
+          const itemDiscount = ((item?.productId?.basePrice*item?.productId?.discountPrice)/100);
+          const itemtotal =item?.productId?.basePrice*item?.quantity 
           total   +=itemtotal;
           subtotal += itemSubtotal;
           totalDiscount += itemDiscount;
