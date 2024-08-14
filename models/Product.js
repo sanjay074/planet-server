@@ -36,6 +36,10 @@ const productSchema = mongoose.Schema(
    //   required: [true, "Product size is required"],
       enum: ["XS", "S", "M", "L", "XL", "XXL"],
     },
+    pantSize:{
+      type:[String],
+      enum:["28","30","32","34","36","38","40","42"]
+    },
     footSize:{
       type:[String],
       enum:["1","2","3","4","5","6","7","8","9","10","11","12"]
