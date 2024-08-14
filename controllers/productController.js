@@ -22,7 +22,7 @@ async function createProduct(req, res) {
     }
 
     // Validate referenced IDs
-    const { category,subCategory,brand,footSize,size,basePrice,finalPrice,pantSize} = value;
+    const { category,subCategory,brand,footSize,size,basePrice,finalPrice,numSize} = value;
     if (
       !isValidObjectId(category) ||
       !isValidObjectId(subCategory) ||
@@ -38,15 +38,22 @@ async function createProduct(req, res) {
 
 
     const Data = await Category.findById(category)
-    const categoryName =Data.name
+    const categoryName = Data.name
 
-    if(categoryName === "shoes"){
+    if(categoryName === "shoes" ){
+
         if(!footSize){
-          return res.status(400).send({
+             return res.status(400).send({
             success:false,
             message:"Foot size required"
           })
-
+        }
+        //please empty the size and pantsize
+        if(size || numSize){
+          return res.status(400).send({
+            success:false,
+            message:"please empty size or numSize"
+          })
         }
       
     // Check for the files
@@ -70,6 +77,7 @@ async function createProduct(req, res) {
         .json({ error: "Failed to upload one or more images" });
     }
 
+
     // Create a new Product instance and save it
     const newProduct = new Product({
       
@@ -85,21 +93,28 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
   }
-
-  //check the condition 
     else {
       const SubData =await SubCategory.findById(subCategory)
       const SubCategoryName = SubData.name
 
-      if(SubCategoryName ==="Shirt"){
-     // Check for the files
-      if(!size){
-      return res.status(400).send({
-        success:false,
-        message:"Shirt  Size is required"
-      })
+      if(SubCategoryName === "Shirt" || SubCategoryName ==="TShirt"){ //Shirt or t-shirt
 
+     // Check for the files
+      if(!size && !numSize){
+        return res.status(400).send({
+        success:false,
+        message:"Shirt  Size or shirt Number is required"
+      })
     }
+
+    //null the footsize and pantSize
+    if(footSize){
+        return res.status(400).send({
+        success:false,
+        message:"please empty foot Size"
+    })
+   }
+
 
     //images file check 
     if (!req.files || req.files.length === 0) {
@@ -134,14 +149,14 @@ async function createProduct(req, res) {
       message: "New Product Created Successfully",
       record: savedProduct,
     });
-    }
 
-    //pantsize subcategory 
+  }
+
     else{
-      if(!pantSize){
+      if(!numSize){  // for jeans
         return res.status(400).send({
           success:false,
-          message:"pant size is required"
+          message:"num size is required"
         })
       }
        //images file check 
