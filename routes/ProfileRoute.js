@@ -21,7 +21,7 @@ const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
      .get("/get-all",authMiddleware,isAdminMd,getAllProfileController)
      .post("/phone-login",phoneLogin)
      .post("/phone-verify",verifyOTP)
-     .get("/userDetails",authMiddleware,isAdminMd,getUserProfile)
+     .get("/userDetails",authMiddleware,getUserProfile)
      
 
 module.exports = userRouter
