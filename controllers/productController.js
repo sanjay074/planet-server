@@ -135,7 +135,7 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
     }
-
+    
     //pantsize subcategory 
     else{
       if(!pantSize){
