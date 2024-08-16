@@ -97,7 +97,7 @@ const getWhishList = async (req, res) => {
       message:"user id is not available"
     })
   } 
-  const myWhilist = await Whislist.findOne({userId}).populate('whislistItems.productId','name description finalPrice basePrice images size discountPrice')
+  const myWhilist = await Whislist.findOne({userId}).populate('whislistItems.productId','name description finalPrice basePrice images size  discountPrice')
     if(!myWhilist){
     return res.status(400).send({
       success:false,

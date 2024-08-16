@@ -8,6 +8,7 @@ const categorySchema = mongoose.Schema(
       unique: true,
     },
   },
+  
   { timestamps: true }
 );
 
