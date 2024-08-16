@@ -243,6 +243,7 @@ const addToCartSchema = Joi.object({
           quantity: Joi.number().positive().required()
       })
   ).required(),
+  
   action: Joi.string().valid('increment', 'decrement')
 });
  // Define Joi schema
