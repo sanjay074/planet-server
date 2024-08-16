@@ -106,7 +106,8 @@ const getcart = async (req, res) => {
           totalDiscount += itemDiscount;
       });
       const deliveryCharges = 93;
-      const totalAmount = subtotal  + deliveryCharges ;
+      const totalAmount = subtotal+deliveryCharges;
+      
       const orderSummary = {
         total,
         discount: totalDiscount,
