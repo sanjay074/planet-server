@@ -151,8 +151,12 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
 
-  }
+    }
+    
+    //pantsize subcategory 
 
+
+  }
     else{
        //images file check 
     if (!req.files || req.files.length === 0) {
