@@ -236,9 +236,7 @@ const schema = Joi.object({
   });
 
   // Validation schema for adding items to the cart
-const addToCartSchema = Joi.object({
-  products: Joi.array().items(
-      Joi.object({
+const updateItemSchema = Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
           quantity: Joi.number().positive().required()
       })
@@ -294,7 +292,28 @@ const addToWishlistSchema = Joi.object({
 });
 
 
-
+const paymentSchema = Joi.object({
+  paymentType:Joi.string()
+  .valid("UPI", "Paytm", "Google Pay")
+  .required()
+  .messages({
+    "any.only": "Payment type must be one of [UPI, Paytm, Google Pay].",
+    "string.empty": "Payment type is required.",
+    "any.required": "Payment type is a mandatory field."
+  }),
+  orCode:Joi.string()
+      // .required()
+      .messages({
+        "string.empty": "OR code is required.",
+        "any.required": "OR code is a mandatory field."
+      }),
+  upiNumber:Joi.string()
+      .required()
+      .messages({
+        "string.empty": "UPI number is required.",
+        "any.required": "UPI number is a mandatory field."
+      }),    
+})
 
 module.exports = {
   categoryValidationSchema,
@@ -307,11 +326,13 @@ module.exports = {
   otpValidationSchema,
   schema,
   Addresschema,
-  addToCartSchema,
+  // addToCartSchema,
   Contactschema,
   JoiOrderSchema,
   createRatingSchema,
   createReturnSchema,
   approveReturnSchema,
-  addToWishlistSchema
+  addToWishlistSchema ,
+  paymentSchema,
+  updateItemSchema
 };

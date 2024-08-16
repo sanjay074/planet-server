@@ -156,7 +156,7 @@ const getUserProfile = async (req,res)=>{
        userData
     })
 
-  }catch(error){
+  }catch(error){    
     return res.status(500).json({
       success: false,
       message: error.message.toString(),
