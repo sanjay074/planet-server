@@ -235,14 +235,9 @@ const schema = Joi.object({
   });
 
   // Validation schema for adding items to the cart
-const addToCartSchema = Joi.object({
-  products: Joi.array().items(
-      Joi.object({
+const updateItemSchema = Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
-          quantity: Joi.number().positive().required()
-      })
-  ).required(),
-  action: Joi.string().valid('increment', 'decrement')
+          action: Joi.string().valid('increment', 'decrement')
 });
  // Define Joi schema
  const Contactschema = Joi.object({
@@ -302,7 +297,7 @@ const paymentSchema = Joi.object({
     "any.required": "Payment type is a mandatory field."
   }),
   orCode:Joi.string()
-      .required()
+      // .required()
       .messages({
         "string.empty": "OR code is required.",
         "any.required": "OR code is a mandatory field."
@@ -326,11 +321,13 @@ module.exports = {
   otpValidationSchema,
   schema,
   Addresschema,
-  addToCartSchema,
+  // addToCartSchema,
   Contactschema,
   JoiOrderSchema,
   createRatingSchema,
   createReturnSchema,
   approveReturnSchema,
-  addToWishlistSchema
+  addToWishlistSchema ,
+  paymentSchema,
+  updateItemSchema
 };

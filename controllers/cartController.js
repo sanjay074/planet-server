@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const Cart = require('../models/Cart'); 
 const mongoose = require("mongoose");
-const { addToCartSchema } = require('../validations/validation');
+const { updateItemSchema } = require('../validations/validation');
 
 const addToCart = async (req, res) => {
   try {
@@ -74,6 +74,7 @@ const addToCart = async (req, res) => {
       });
   }
 };
+
 //get the cart 
 const getcart = async (req, res) => {
   try {
@@ -187,7 +188,7 @@ const deleteFromCart = async (req, res) => {
 const updateItemQuantity = async (req, res) => {
   try {
       // Validate request body
-      const { error } = addToCartSchema.validate(req.body);
+      const { error } = updateItemSchema.validate(req.body);
       if (error) {
         return res.status(400).send({
           success: false,
