@@ -315,6 +315,19 @@ const paymentSchema = Joi.object({
       }),    
 })
 
+
+  // Validation schema for adding items to the cart
+  const addToCartSchema = Joi.object({
+    products: Joi.array().items(
+        Joi.object({
+            productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+            quantity: Joi.number().positive().required()
+        })
+    ).required(),
+    
+    action: Joi.string().valid('increment', 'decrement')
+  });
+
 module.exports = {
   categoryValidationSchema,
   subCategoryValidationSchema,
@@ -326,7 +339,7 @@ module.exports = {
   otpValidationSchema,
   schema,
   Addresschema,
-  // addToCartSchema,
+   addToCartSchema,
   Contactschema,
   JoiOrderSchema,
   createRatingSchema,

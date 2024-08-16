@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const Cart = require('../models/Cart'); 
 const mongoose = require("mongoose");
-const { updateItemSchema } = require('../validations/validation');
+const { updateItemSchema, addToCartSchema} = require('../validations/validation');
 
 const addToCart = async (req, res) => {
   try {
