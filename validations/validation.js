@@ -89,7 +89,7 @@ const productValidationSchema = Joi.object({
     "any.only": "Size must be one of XS, S, M, L, XL, XXL",
     "any.required": "Size is required",
   }),
-  pantSize:Joi.array().items(Joi.string().valid("28", "30", "32", "34", "36", "38", "40", "42", "44")).messages({
+  numSize:Joi.array().items(Joi.string().valid("28", "30", "32", "34", "36", "38", "40", "42", "44")).messages({
     "array.base": "Foot sizes must be an array",
     "string.base": "Foot size must be a string",
     "any.only": "Foot size must be one of 28,30...........40 ",
@@ -112,6 +112,7 @@ const productValidationSchema = Joi.object({
     "number.min": "Product base price cannot be less than 0",
     "any.required": "Product base price is required",
   }),
+
   finalPrice: Joi.number()
     .min(0)
     .required()
@@ -237,7 +238,11 @@ const schema = Joi.object({
   // Validation schema for adding items to the cart
 const updateItemSchema = Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
-          action: Joi.string().valid('increment', 'decrement')
+          quantity: Joi.number().positive().required()
+      })
+  ).required(),
+  
+  action: Joi.string().valid('increment', 'decrement')
 });
  // Define Joi schema
  const Contactschema = Joi.object({

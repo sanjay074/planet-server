@@ -108,7 +108,8 @@ const getcart = async (req, res) => {
       });
       totalDiscount= total-subtotal;
       const deliveryCharges = 93;
-      const totalAmount = subtotal  + deliveryCharges ;
+      const totalAmount = subtotal+deliveryCharges;
+      
       const orderSummary = {
         total,
         discount:totalDiscount,

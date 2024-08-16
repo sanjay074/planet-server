@@ -22,7 +22,7 @@ async function createProduct(req, res) {
     }
 
     // Validate referenced IDs
-    const { category,subCategory,brand,footSize,size,basePrice,finalPrice,pantSize} = value;
+    const { category,subCategory,brand,footSize,size,basePrice,finalPrice,numSize} = value;
     if (
       !isValidObjectId(category) ||
       !isValidObjectId(subCategory) ||
@@ -38,17 +38,25 @@ async function createProduct(req, res) {
 
 
     const Data = await Category.findById(category)
-    const categoryName =Data.name
+    const categoryName = Data.name
 
-    if(categoryName === "shoes"){
+    if(categoryName === "shoes" ){
+
         if(!footSize){
-          return res.status(400).send({
+             return res.status(400).send({
             success:false,
             message:"Foot size required"
           })
-
+        }
+        //please empty the size and pantsize
+        if(size || numSize){
+          return res.status(400).send({
+            success:false,
+            message:"please empty size or numSize"
+          })
         }
       
+
     // Check for the files
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
@@ -70,6 +78,7 @@ async function createProduct(req, res) {
         .json({ error: "Failed to upload one or more images" });
     }
 
+
     // Create a new Product instance and save it
     const newProduct = new Product({
       
@@ -85,21 +94,28 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
   }
-
-  //check the condition 
     else {
       const SubData =await SubCategory.findById(subCategory)
       const SubCategoryName = SubData.name
 
-      if(SubCategoryName ==="Shirt"){
-     // Check for the files
-      if(!size){
-      return res.status(400).send({
-        success:false,
-        message:"Shirt  Size is required"
-      })
+      if(SubCategoryName === "Shirt" || SubCategoryName ==="TShirt" || SubCategoryName === "Jeans"){ //Shirt or t-shirt or jeans
 
+     // Check for the files
+      if(!size && !numSize){
+        return res.status(400).send({
+        success:false,
+        message:"Size or NumSize is required for this type of product"
+      })
     }
+
+    //null the footsize and pantSize
+    if(footSize){
+        return res.status(400).send({
+        success:false,
+        message:"please empty foot Size"
+    })
+   }
+
 
     //images file check 
     if (!req.files || req.files.length === 0) {
@@ -134,16 +150,14 @@ async function createProduct(req, res) {
       message: "New Product Created Successfully",
       record: savedProduct,
     });
+
     }
     
     //pantsize subcategory 
+
+
+  }
     else{
-      if(!pantSize){
-        return res.status(400).send({
-          success:false,
-          message:"pant size is required"
-        })
-      }
        //images file check 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
@@ -427,67 +441,6 @@ async function updateProduct(req, res) {
   }
 }
 
-//async function createProduct(req, res) {
-//   try {
-//     // Validate the request body
-//     const { error, value } = productValidationSchema.validate(req.body);
-//     if (error) {
-//       return res.status(400).json({ error: error.details[0].message });
-//     }
-
-//     //Validate referenced IDs
-//     const { category, subCategory, brand } = value;
-//     if (
-//       !isValidObjectId(category) ||
-//       !isValidObjectId(subCategory) ||
-//       !isValidObjectId(brand)
-//     ) {
-//       return res
-//         .status(400)
-//         .json({ error: "Invalid category, subcategory, or brand ID" });
-//     }
-
-//     // Check for the files
-//     if (!req.files || req.files.length === 0) {
-//       return res.status(400).json({ error: "No files uploaded" });
-//     }
-
-//     // Upload images to Cloudinary
-//     const uploadPromises = req.files.map((file) =>
-//       uploadMultipleImagesOnCloudinary(file.path)
-//     );
-//     const uploadResults = await Promise.all(uploadPromises);
-
-//     // Check if any upload failed
-//     if (uploadResults.some((result) => !result)) {
-//       return res
-//         .status(500)
-//         .json({ error: "Failed to upload one or more images" });
-//     }
-
-//     // Create a new Product instance and save it
-//     const newProduct = new Product({
-//       ...value,
-//       images: uploadResults.map((result) => result.secure_url),
-//     });
-//     const savedProduct = await newProduct.save();
-
-//     return res.status(201).json({
-//       message: "New Product Created Successfully",
-//       record: savedProduct,
-//     });
-//   } catch (error) {
-//     console.error("Error creating product:", error);
-
-//     // Duplicate entry error handling
-//     if (error.code === 11000) {
-//       return res.status(422).json({ message: "Duplicate entry found" });
-//     }
-
-//     return res.status(500).json({ message: "Internal Server Error" });
-//   }
-// }
-
 module.exports = {
   createProduct,
   // getAllProduct,
@@ -496,55 +449,3 @@ module.exports = {
   updateProduct,
   deleteProduct,
 };
-
-// async function createProduct(req, res) {
-//     try {
-//         const { error } = productValidationSchema.validate(req.body);
-
-//         if ( error ) {
-//             res.status(400).json({ error: error.details[0].message})
-//         }
-
-//             // Check for the files
-//     if (!req.files || req.files.length === 0) {
-//         return res.status(400).json({ error: "No files uploaded" });
-//       }
-//       //upload images to cloud
-//       const uploadResults = await Promise.all(req.files.map( file => uploadMultipleImagesOnCloudinary(file.path)))
-
-//           // Check if any upload failed
-//     if (uploadResults.some(result => !result)) {
-//         return res.status(500).json({ error: "Failed to upload one or more images" });
-//       }
-
-//           // Create a new Product instance and save it
-//     const newProduct = new Product({
-//         name: req.body.name,
-//         description: req.body.description,
-//         category: req.body.category,
-//         subCategory: req.body.subCategory,
-//         brand: req.body.brand,
-//         color: req.body.color,
-//         size: req.body.size,
-//         quantity: req.body.quantity,
-//         stock: req.body.stock,
-//         discountPrice: req.body.discountPrice,
-//         basePrice: req.body.basePrice,
-//         finalPrice: req.body.finalPrice,
-//         images: uploadResults.map(result => result.secure_url),
-//         active: req.body.active
-//       });
-
-//       const saveProduct = await newProduct.save();
-
-//       res.status(201).json({message: "New Product created successfully", record: saveProduct})
-
-//     } catch (error) {
-//         if (error.code === 11000) {
-//             return res.status(422).json({ message: "Duplicate entry found" });
-//           } else {
-//             return res.status(500).json({ message: "Internal Server Error" });
-//           }
-
-//     }
-// }
