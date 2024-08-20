@@ -13,16 +13,17 @@ const mongoose = require("mongoose");
 //Helper function to validate ObjectId
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
+
 async function createProduct(req, res) {
   try {
     // Validate the request body
-    const { error, value } = productValidationSchema.validate(req.body);
+    const {error,value} = productValidationSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
 
     // Validate referenced IDs
-    const { category,subCategory,brand,footSize,size,basePrice,finalPrice,numSize} = value;
+    const {category,subCategory,brand,footSize,size,basePrice,finalPrice,numSize} = value;
     if (
       !isValidObjectId(category) ||
       !isValidObjectId(subCategory) ||
@@ -34,7 +35,7 @@ async function createProduct(req, res) {
     }
     
     const discount = basePrice-finalPrice;
-    discountPrice = ((discount/basePrice)*100).toFixed();
+    discountPrice  = ((discount/basePrice)*100).toFixed();
 
 
     const Data = await Category.findById(category)
@@ -94,11 +95,12 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
   }
+
     else {
       const SubData =await SubCategory.findById(subCategory)
       const SubCategoryName = SubData.name
 
-      if(SubCategoryName === "Shirt" || SubCategoryName ==="TShirt" || SubCategoryName === "Jeans"){ //Shirt or t-shirt or jeans
+      if(SubCategoryName === "Shirt" || SubCategoryName === "TShirt" || SubCategoryName === "Jeans"){ //Shirt or t-shirt or jeans
 
      // Check for the files
       if(!size && !numSize){
@@ -151,12 +153,8 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
 
-    }
-    
-    //pantsize subcategory 
-
-
   }
+
     else{
        //images file check 
     if (!req.files || req.files.length === 0) {
@@ -192,8 +190,7 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
     }
-  }
- 
+    } 
     
 }catch (error){  
     console.error("Error creating product:", error);

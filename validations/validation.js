@@ -240,10 +240,11 @@ const updateItemSchema = Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
           quantity: Joi.number().positive().required()
       })
-  ).required(),
+      
+ // ).required(),
   
-  action: Joi.string().valid('increment', 'decrement')
-});
+  //action: Joi.string().valid('increment', 'decrement')
+//});
  // Define Joi schema
  const Contactschema = Joi.object({
   name: Joi.string().trim().required(),
