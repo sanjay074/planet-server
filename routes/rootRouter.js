@@ -15,7 +15,7 @@ const whislistRoute = require("./whislistRoute");
 const  ratingAndReviewRoute  = require("./ratingAndReviewRoute");
 const  searchRoute  = require("./searchRoute");
 const userDetailsRoute = require("./userDetailsRoute");
-
+const paymentRoute = require("../routes/paymentRoute");
 const router = express.Router();
 
 router.use("/categories", categoryRouter);
@@ -33,5 +33,6 @@ router.use("/whislist",whislistRoute)
 router.use("/ratingReview",ratingAndReviewRoute)
 router.use("/searchRoute",searchRoute)
 router.use("/userDetails",userDetailsRoute)
+router.use("/payment",paymentRoute);
 
 module.exports = router;

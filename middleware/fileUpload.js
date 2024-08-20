@@ -15,10 +15,12 @@ const uploadBrand = fileUpload("brand");
 const uploadProduct = fileUpload("product");
 const uploadUser = fileUpload("user");
 const uploadTestimonial = fileUpload("testimonial");
+const uploadPayment = fileUpload("payment");
 
 module.exports = {
   uploadBrand: uploadBrand,
   uploadProduct: uploadProduct,
   uploadUser: uploadUser,
   uploadTestimonial: uploadTestimonial,
+  uploadPayment:uploadPayment,
 };

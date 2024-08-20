@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const Cart = require('../models/Cart'); 
 const mongoose = require("mongoose");
-const { addToCartSchema } = require('../validations/validation');
+const { updateItemSchema, addToCartSchema} = require('../validations/validation');
 
 const addToCart = async (req, res) => {
   try {
@@ -74,6 +74,7 @@ const addToCart = async (req, res) => {
       });
   }
 };
+
 //get the cart 
 const getcart = async (req, res) => {
   try {
@@ -98,19 +99,20 @@ const getcart = async (req, res) => {
       let totalDiscount = 0;
       let total=0;
       cart.cartItems.forEach(item => {
-          const itemSubtotal = item.productId.finalPrice * item.quantity;
-          const itemDiscount = ((item.productId.basePrice*item.productId.discountPrice)/100);
-          const itemtotal =item.productId.basePrice*item.quantity 
+          const itemSubtotal = item?.productId?.finalPrice * item?.quantity;
+        //  const itemDiscount = ((item.productId.basePrice*item.productId.discountPrice)/100);
+          const itemtotal =item?.productId?.basePrice*item?.quantity 
           total   +=itemtotal;
           subtotal += itemSubtotal;
-          totalDiscount += itemDiscount;
+         // totalDiscount += itemDiscount;
       });
+      totalDiscount= total-subtotal;
       const deliveryCharges = 93;
       const totalAmount = subtotal+deliveryCharges;
       
       const orderSummary = {
         total,
-        discount: totalDiscount,
+        discount:totalDiscount,
         subtotal,
         deliveryCharges,
         totalPrice:totalAmount
@@ -133,52 +135,23 @@ const deleteFromCart = async (req, res) => {
   try {
     const userId = req.userId;
     const { productId } = req.body;
-    // Validate productId
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).send({
         success: false,
         message: `Invalid product Id: ${productId}`
       });
     }
-    // Find the user's cart
     let cart = await Cart.findOne({ userId });
-    if (!cart) {
-      return res.status(404).send({
-        success: false,
-        message: "Cart not found"
-      });
-    }
-    // Find the product index in the cart
-    const itemIndex = cart.cartItems.findIndex(item => 
-         item.productId.toString() === productId);
-    if(itemIndex === -1) {
-      return res.status(404).send({
-        success: false,
-        message: `Product not found in cart: ${productId}`
-      });
-    }
-    // Decrease the quantity or remove the product if quantity is 1
-    if (cart.cartItems[itemIndex].quantity > 1) {
-      cart.cartItems[itemIndex].quantity -= 1;
-    } else {
-      cart.cartItems.splice(itemIndex, 1);
-    }
-    // Calculate the total price of the cart
-    let totalPrice = 0;
-    for (const item of cart.cartItems) {
-      const product = await Product.findById(item.productId);
-      totalPrice += product.basePrice * item.quantity;
-    }
-    cart.totalPrice = totalPrice;
-    // Save the updated cart
-    await cart.save();
-    res.status(200).json({
-      success: true,
-      message: "Item deleted successfully"
-    });
-
+    if (cart) {
+      cart.cartItems = cart.cartItems.filter(item =>
+          !(item.productId.toString() === productId)
+      );
+      cart = await cart.save();
+      return res.status(200).json({ success: true, message: "User item remove from cart sucessfully" });
+  } else {
+      return res.status(400).json({ success: false, message: "Cart not found"});
+  }
   } catch (error) {
-    console.error("Error in removing from the cart:", error);
     res.status(500).send({
       success: false,
       message: "Internal server error",
@@ -188,7 +161,7 @@ const deleteFromCart = async (req, res) => {
 const updateItemQuantity = async (req, res) => {
   try {
       // Validate request body
-      const { error } = addToCartSchema.validate(req.body);
+      const { error } = updateItemSchema.validate(req.body);
       if (error) {
         return res.status(400).send({
           success: false,
