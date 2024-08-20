@@ -27,11 +27,11 @@ const productSchema = mongoose.Schema(
       ref: "Brand",
       required: [true, "Product brandId is required"],
     },
-    color: {
+    color:{
       type:[String],
       required: [true, "Product color is required"],
     },
-    size: {
+    size:{
       type:[String],
    //   required: [true, "Product size is required"],
       enum: ["XS", "S", "M", "L", "XL", "XXL"],
@@ -45,12 +45,12 @@ const productSchema = mongoose.Schema(
       enum:["1","2","3","4","5","6","7","8","9","10","11","12"]
     },
 
-    quantity: {
+    quantity:{
       type: Number,
       required: [true, "Product quantity is required"],
       min: 0,
     },
-    stock: {
+    stock:{
       type: Boolean,
       default: true,
     },

@@ -13,6 +13,7 @@ const mongoose = require("mongoose");
 //Helper function to validate ObjectId
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
+
 async function createProduct(req, res) {
   try {
     // Validate the request body
@@ -188,8 +189,7 @@ async function createProduct(req, res) {
       record: savedProduct,
     });
     }
-  }
- 
+    } 
     
 }catch (error){  
     console.error("Error creating product:", error);
