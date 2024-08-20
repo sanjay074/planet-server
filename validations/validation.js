@@ -90,10 +90,10 @@ const productValidationSchema = Joi.object({
     "any.required": "Size is required",
   }),
   numSize:Joi.array().items(Joi.string().valid("28", "30", "32", "34", "36", "38", "40", "42", "44")).messages({
-    "array.base": "Foot sizes must be an array",
-    "string.base": "Foot size must be a string",
-    "any.only": "Foot size must be one of 28,30...........40 ",
-    "any.required": "Foot size is required",
+    "array.base": "Num sizes must be an array",
+    "string.base": "Num size must be a string",
+    "any.only": "Num size must be one of 28,30...........40 ",
+    "any.required": "Num size is required",
   }),
 
   quantity: Joi.number().integer().min(0).required().messages({
