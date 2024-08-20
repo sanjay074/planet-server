@@ -77,7 +77,8 @@ const productValidationSchema = Joi.object({
     "array.includes": "Product colors must contain strings",
     "any.required": "Product colors are required",
   }),
-  footSize: Joi.array().items(Joi.string().valid("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")).messages({
+  footSize: Joi.array().items(Joi.string().valid("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))
+  .messages({
     "array.base": "Foot sizes must be an array",
     "string.base": "Foot size must be a string",
     "any.only": "Foot size must be one of 1,2,3,4,5,6,7,8,9,10,11,12",
@@ -90,10 +91,10 @@ const productValidationSchema = Joi.object({
     "any.required": "Size is required",
   }),
   numSize:Joi.array().items(Joi.string().valid("28", "30", "32", "34", "36", "38", "40", "42", "44")).messages({
-    "array.base": "Foot sizes must be an array",
-    "string.base": "Foot size must be a string",
-    "any.only": "Foot size must be one of 28,30...........40 ",
-    "any.required": "Foot size is required",
+    "array.base": "num sizes must be an array",
+    "string.base": "num size must be a string",
+    "any.only": "numsize must be one of 28,30...........40 ",
+    "any.required": "num size is required",
   }),
 
   quantity: Joi.number().integer().min(0).required().messages({
@@ -240,7 +241,7 @@ const updateItemSchema = Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
           quantity: Joi.number().positive().required()
       })
-      
+
  // ).required(),
   
   //action: Joi.string().valid('increment', 'decrement')
