@@ -1,8 +1,54 @@
 const Payment = require("../models/payment");
 const {paymentSchema} = require("../validations/validation");
 const cloudinary = require("cloudinary").v2;
+const { v4: uuidv4 } = require('uuid');
 const mongoose = require("mongoose");
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+const QRCode = require('qrcode');
+
+const generateTransactionId = () => {
+  const prefix = 'T';
+  const timestamp = Date.now().toString();
+  const uniquePart = Math.floor(100000 + Math.random() * 900000).toString(); 
+  return prefix + timestamp.slice(-6) + uniquePart; 
+};
+
+const generateUpiQrcode = async (req, res) => {
+  const { upiId, name, amount } = req.body;
+  if (!upiId || !name || !amount) {
+      return res.status(400).json({status:0 ,message: 'UPI ID, Name, and Amount are required' });
+  }
+
+  
+  const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(Date.now().toString())}&cu=INR`;
+  const transactionId = generateTransactionId();
+  try {
+      const qrCodeData = await QRCode.toDataURL(upiString);
+      res.status(200).json({status:1 ,message:"Get payment payment methods" ,qrCode: qrCodeData, upiLink: upiString ,transactionId});
+  } catch (err) {
+      res.status(500).json({ error: 'Failed to generate QR code' });
+  }
+};
+
+
+
+
+
+const generateQrcode = async (req,res)=>{
+  const { upiId, name, amount } = req.body;
+    if (!upiId || !name || !amount) {
+        return res.status(400).json({ error: 'UPI ID, Name, and Amount are required' });
+    }
+    const upiString = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}`;
+    try {
+        const qrCodeData = await QRCode.toDataURL(upiString);
+        res.status(200).json({ qrCode: qrCodeData });
+    } catch (err) {
+        console.error('Error generating QR code:', err);
+        res.status(500).json({ error: 'Failed to generate QR code' });
+    }
+  }
+
 const paymentType = async (req,res)=>{
     try{
         const { error } = paymentSchema.validate(req.body);
@@ -127,5 +173,5 @@ const deletePaymentType = async (req,res)=>{
 
 
 module.exports = {
-  paymentType,getAllPaymentType,deletePaymentType,getPaymentType
+  paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode
 }
