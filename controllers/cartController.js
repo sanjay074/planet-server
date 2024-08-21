@@ -78,58 +78,69 @@ const addToCart = async (req, res) => {
 //get the cart 
 const getcart = async (req, res) => {
   try {
-      const userId = req.userId;
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-          return res.status(400).json({
-             success: false, 
-             message: "Invalid user ID"
-        });
-      }
-      if (!userId) {
-             return res.status(400).json({
-             success: false,
-              message: 'User ID is required'
-             });
-      }
-      const cart = await Cart.findOne({userId}).populate('cartItems.productId', 'name description finalPrice basePrice images size discountPrice');
-      if (!cart) {
-          return res.status(404).json({ message: 'Cart not found' });
-      }
-      let subtotal = 0;
-      let totalDiscount = 0;
-      let total=0;
-      cart.cartItems.forEach(item => {
-          const itemSubtotal = item?.productId?.finalPrice * item?.quantity;
-        //  const itemDiscount = ((item.productId.basePrice*item.productId.discountPrice)/100);
-          const itemtotal =item?.productId?.basePrice*item?.quantity 
-          total   +=itemtotal;
-          subtotal += itemSubtotal;
-         // totalDiscount += itemDiscount;
+    const userId = req.userId;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID"
       });
-      totalDiscount= total-subtotal;
-      const deliveryCharges = 93;
-      const totalAmount = subtotal+deliveryCharges;
-      
-      const orderSummary = {
-        total,
-        discount:totalDiscount,
-        subtotal,
-        deliveryCharges,
-        totalPrice:totalAmount
-    }; 
+    }
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID is required'
+      });
+    }
+    
+    const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size discountPrice');
+    
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+    
+    let subtotal = 0;
+    let totalDiscount = 0;
+    let total = 0;
+    
+    cart.cartItems.forEach(item => {
+      const itemSubtotal = item?.productId?.finalPrice * item?.quantity;
+      const itemTotal = item?.productId?.basePrice * item?.quantity;
+      total += itemTotal;
+      subtotal += itemSubtotal;
+    });
+    
+    totalDiscount = total - subtotal;
+
+    
+    let deliveryCharges = 0;
+    if (subtotal < 1500) {
+      deliveryCharges = 99;
+    }
+    
+    const totalAmount = subtotal + deliveryCharges;
+    
+    const orderSummary = {
+      total,
+      discount: totalDiscount,
+      subtotal,
+      deliveryCharges,
+      totalPrice: totalAmount
+    };
+    
     return res.status(200).json({
-      success:true,
-      message:"here is your all data", 
+      success: true,
+      message: "Here is your cart data",
       cart,
       orderSummary
-       });
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message.toString(),
-  });
+    });
   }
-}
+};
+
 //delete from cart 
 const deleteFromCart = async (req, res) => {
   try {
