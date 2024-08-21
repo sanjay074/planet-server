@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const mongoose = require("mongoose");
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const QRCode = require('qrcode');
-
+const PaymentHistory = require("../models/paymentHistory");
 const generateTransactionId = () => {
   const prefix = 'T';
   const timestamp = Date.now().toString();
@@ -19,7 +19,6 @@ const generateUpiQrcode = async (req, res) => {
       return res.status(400).json({status:0 ,message: 'UPI ID, Name, and Amount are required' });
   }
 
-  
   const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(Date.now().toString())}&cu=INR`;
   const transactionId = generateTransactionId();
   try {
@@ -30,6 +29,28 @@ const generateUpiQrcode = async (req, res) => {
   }
 };
 
+
+const paymentHistory = async (req,res)=>{
+   try{
+    const { utrNumber, transactionId, amount} = req.body;
+    const userId = req.userId;
+    
+    if (!utrNumber) {
+      return res.status(400).json({ true:0,message: 'UTR number are required'});
+    }
+    const paymentHistory = new PaymentHistory({
+      utr,amount,transactionId,
+      userId:userId
+    })
+    const savePaymentHistory = await paymentHistory.save();
+    return res.status(201).json({ status: 1, message: 'Payment successfully'});
+   }catch(err){
+    return res.status(500).json({
+      status: 0,
+      message: err.message.toString(),
+  });
+   }
+}
 
 
 
@@ -173,5 +194,5 @@ const deletePaymentType = async (req,res)=>{
 
 
 module.exports = {
-  paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode
+  paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode,paymentHistory
 }
