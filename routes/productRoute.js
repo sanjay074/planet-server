@@ -8,13 +8,14 @@ const {
   getSingleProduct,
   updateProduct,
   deleteProduct,
+  getAllProduct,
 } = require("../controllers/productController");
 const { uploadProduct } = require("../middleware/fileUpload");
 const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
 
 productRouter
   .post("/",authMiddleware,isAdminMd,uploadProduct.array("images"), createProduct)
-  // .get("/", getAllProduct)
+  .get("/getAll", getAllProduct)
   .get("/", getProduct)
   .get("/:_id", getSingleProduct)
   .put("/:_id",authMiddleware,isAdminMd,uploadProduct.array("images"), updateProduct)

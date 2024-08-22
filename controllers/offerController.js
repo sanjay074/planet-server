@@ -3,7 +3,8 @@ const offer =require( "../models/offer");
 const { uploadOnCloudinary, getCloudinaryPublicId, deleteFromCloudinary } =require( "../utils/cloudinary");
 const  { offerValidationSchema } =require("../validations/validation");
 
-const  createOffer =async(req,res)=>{
+
+const  createOffer = async(req,res)=>{
     try {
      const { error } = offerValidationSchema.validate(req.body);
      if(error){
@@ -109,11 +110,8 @@ const deleteoffer = async(req,res)=>{
         })
     }
 }
-
 const getSingleOffer = async(req,res) => {
-    
     try{
-    
         const id = req.params.id
     
           if(!isValidObjectId(id)){
@@ -134,8 +132,6 @@ const getSingleOffer = async(req,res) => {
     message:"your data",
     data
    })
-
-
     }catch(error){
             return res.status(400).send({
             success:false,
@@ -143,9 +139,6 @@ const getSingleOffer = async(req,res) => {
            })
     }
 }
-
-
-
 const updateOffer = async (req, res) => {
     try {
         // Validate the request body
