@@ -254,16 +254,11 @@ const schema = Joi.object({
 
   });
 
-  // Validation schema for adding items to the cart
 const updateItemSchema = Joi.object({
-          productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
-          quantity: Joi.number().positive().required()
-      })
+    productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+    action: Joi.string().valid('increment', 'decrement')
+});
 
- // ).required(),
-  
-  //action: Joi.string().valid('increment', 'decrement')
-//});
  // Define Joi schema
  const Contactschema = Joi.object({
   name: Joi.string().trim().required(),
