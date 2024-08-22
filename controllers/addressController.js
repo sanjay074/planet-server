@@ -4,6 +4,7 @@ const { Addresschema } = require("../validations/validation");
 
 const createAddress = async (req, res) => {
   try {
+
     // Validate the request body against the schema
     const { error } = Addresschema.validate(req.body);
     if (error) {
@@ -13,11 +14,28 @@ const createAddress = async (req, res) => {
       });
     }
 
+    
+    const userId = req.userId
+
+    if(!mongoose.Types.ObjectId.isValid(userId)){
+      return res.status(400).send({
+        success:false,
+        message:"user id is  invalid  please write the correct id"
+      })
+    }
+    if(!userId){
+      return res.status(400).send({
+        success:false,
+        message:"this user id is not available "
+      })
+    }
+
+
     // Destructure validated values from the request body
     const { name, mobile, email, Pincode, Landmark, district, state, addressAs, fullAddress } = req.body;
 
     // Save the data to the database
-    const userAddress = new Address({name,mobile,email,Pincode,Landmark,district,state,addressAs,fullAddress });
+    const userAddress = new Address({name,mobile,email,Pincode,Landmark,district,state,addressAs,fullAddress,userId });
     const savedAddress = await userAddress.save();
 
     // Successful response
@@ -39,6 +57,10 @@ const createAddress = async (req, res) => {
 //update the address 
 const updateAddress = async (req, res) => {
   try {
+
+
+    
+
     // Destructure validated values from the request body
     const { name, mobile, email, Pincode, Landmark, district, state, addressAs,fullAddress} = req.body;
 
@@ -79,32 +101,38 @@ const updateAddress = async (req, res) => {
   }
 };
 
-const getAddress =async(req,res)=>{
+const getAddress = async(req,res) => {
     try{
-    //req id from params
-    const id = req.params.id;
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(400).json({message:"Invalid address Id"})
+
+    const userId = req.userId
+
+    if(!mongoose.Types.ObjectId.isValid(userId)){
+        return res.status(400).send({
+        success:false,
+        message:"this id is invalid"
+      })
     }
-        const myAddress =await Address.findById(id)
-        if(!myAddress){
-            return res.status(404).send({
-                success:"false",
-                message:"id is not available"
-            })
-        }
-        //return resposne
+
+    if(!userId){
+      return res.status(400).send({
+        success:false,
+        message:"this user is not available "
+      })
+    }
+
+    const myAddressData = await Address.find({userId:userId})
             return res.status(200).send({
             success:true,
             message:"Here is your  data",
-            myAddress
+            myAddressData
+          //  myAddress
         })
 
     }catch(error){
        // Error handling
         return res.status(500).send({
         success: false,
-        message: "Error updating address",
+        message: "Error in getting address",
         error: error.message
       });
     }
