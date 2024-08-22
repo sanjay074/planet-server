@@ -5,7 +5,9 @@ require("dotenv").config();
 require("./db/connect");
 const Router = require("./routes/rootRouter");
 const { default: helmet } = require("helmet");
-
+app.get("/", (req, res) => {
+  res.send("hello planet");
+});
 app.use(helmet());
 app.use(express.json());
 app.use(cors());
@@ -19,9 +21,7 @@ app.use((req, res, next) => {
       message: `The requested URL ${req.originalUrl} was not found on this server.`,
   });
 });
-app.get("/", (req, res) => {
-  res.send("hello planet");
-});
+
 const Port = process.env.PORT||3000
 
 app.listen(process.env.PORT,() => {
