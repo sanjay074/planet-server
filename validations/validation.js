@@ -43,7 +43,26 @@ const brandValidationSchema = Joi.object({
     "string.min": "Brand name should have a minimum length of {#limit}",
     "string.max": "Brand name should have a maximum length of {#limit}",
   }),
-  pic: Joi.string(),
+ pic:Joi.string(),
+});
+
+
+
+const offerValidationSchema = Joi.object({
+  name: Joi.string().min(1).max(255).required().messages({
+    "string.base": "Offer name should be a type of text",
+    "string.empty": "Offer name is required",
+    "any.required": "Offer name is required",
+  }),
+  offerImage: Joi.string(),
+ 
+  offerPrice: Joi.number().integer().min(0).messages({
+    "number.base": "Offer price must be a number",
+    "number.min": "Offer price cannot be less than 0",
+  }),
+  validUpto: Joi.date().optional().messages({
+    'date.base': 'Date must be a valid date',
+  }),
 });
 
 const productValidationSchema = Joi.object({
@@ -77,7 +96,8 @@ const productValidationSchema = Joi.object({
     "array.includes": "Product colors must contain strings",
     "any.required": "Product colors are required",
   }),
-  footSize: Joi.array().items(Joi.string().valid("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")).messages({
+  footSize: Joi.array().items(Joi.string().valid("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"))
+  .messages({
     "array.base": "Foot sizes must be an array",
     "string.base": "Foot size must be a string",
     "any.only": "Foot size must be one of 1,2,3,4,5,6,7,8,9,10,11,12",
@@ -90,10 +110,10 @@ const productValidationSchema = Joi.object({
     "any.required": "Size is required",
   }),
   numSize:Joi.array().items(Joi.string().valid("28", "30", "32", "34", "36", "38", "40", "42", "44")).messages({
-    "array.base": "Num sizes must be an array",
-    "string.base": "Num size must be a string",
-    "any.only": "Num size must be one of 28,30...........40 ",
-    "any.required": "Num size is required",
+    "array.base": "Foot sizes must be an array",
+    "string.base": "Foot size must be a string",
+    "any.only": "Foot size must be one of 28,30...........40 ",
+    "any.required": "Foot size is required",
   }),
 
   quantity: Joi.number().integer().min(0).required().messages({
@@ -240,7 +260,7 @@ const updateItemSchema = Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
           quantity: Joi.number().positive().required()
       })
-      
+
  // ).required(),
   
   //action: Joi.string().valid('increment', 'decrement')
@@ -348,5 +368,6 @@ module.exports = {
   approveReturnSchema,
   addToWishlistSchema ,
   paymentSchema,
-  updateItemSchema
+  updateItemSchema,
+  offerValidationSchema
 };

@@ -16,6 +16,7 @@ const  ratingAndReviewRoute  = require("./ratingAndReviewRoute");
 const  searchRoute  = require("./searchRoute");
 const userDetailsRoute = require("./userDetailsRoute");
 const paymentRoute = require("../routes/paymentRoute");
+const offerRoute = require("./offerRoute");
 const router = express.Router();
 
 router.use("/categories", categoryRouter);
@@ -34,5 +35,6 @@ router.use("/ratingReview",ratingAndReviewRoute)
 router.use("/searchRoute",searchRoute)
 router.use("/userDetails",userDetailsRoute)
 router.use("/payment",paymentRoute);
+router.use("/offer",offerRoute);
 
 module.exports = router;
