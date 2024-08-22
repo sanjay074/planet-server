@@ -54,13 +54,12 @@ const offerValidationSchema = Joi.object({
     "string.empty": "Offer name is required",
     "any.required": "Offer name is required",
   }),
-  offerImage: Joi.string(),
- 
+  offerImage: Joi.string().optional(),
   offerPrice: Joi.number().integer().min(0).messages({
     "number.base": "Offer price must be a number",
     "number.min": "Offer price cannot be less than 0",
   }),
-  validUpto: Joi.date().optional().messages({
+  validUpto:Joi.date().optional().messages({
     'date.base': 'Date must be a valid date',
   }),
 });
