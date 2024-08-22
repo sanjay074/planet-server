@@ -438,10 +438,26 @@ async function updateProduct(req, res) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
+async function getAllProduct(req,res){
+  try{
+    const getAllData =await Product.find({})
+    return res.status(200).send({
+      success:true,
+      message:"here is your all data",
+      data:getAllData.length,
+      getAllData
+    })
+     }catch(error){
+       return res.status(500).json({
+       message: "Internal Server Error" ,
+       error:error.message
+      });
+  }
+}
 
 module.exports = {
   createProduct,
-  // getAllProduct,
+   getAllProduct,
   getProduct,
   getSingleProduct,
   updateProduct,
