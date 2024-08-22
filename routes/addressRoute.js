@@ -5,7 +5,7 @@ const {authMiddleware}  =require("../middleware/authMiddle")
 
 addressRoute.post("/",authMiddleware,createAddress)
 addressRoute.put("/:id",authMiddleware,updateAddress)
-addressRoute.get("/:id",authMiddleware,getAddress)
+addressRoute.get("/getmydata",authMiddleware,getAddress)
 addressRoute.delete("/:id",authMiddleware,deleteAddress)
 
 

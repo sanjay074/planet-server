@@ -111,7 +111,7 @@ const getcart = async (req, res) => {
     
     totalDiscount = total - subtotal;
 
-    
+  
     let deliveryCharges = 0;
     if (subtotal < 1500) {
       deliveryCharges = 99;

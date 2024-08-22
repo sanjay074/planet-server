@@ -457,7 +457,7 @@ async function getAllProduct(req,res){
 
 module.exports = {
   createProduct,
-   getAllProduct,
+  getAllProduct,
   getProduct,
   getSingleProduct,
   updateProduct,
