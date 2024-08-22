@@ -43,7 +43,26 @@ const brandValidationSchema = Joi.object({
     "string.min": "Brand name should have a minimum length of {#limit}",
     "string.max": "Brand name should have a maximum length of {#limit}",
   }),
-  pic: Joi.string(),
+ pic:Joi.string(),
+});
+
+
+
+const offerValidationSchema = Joi.object({
+  name: Joi.string().min(1).max(255).required().messages({
+    "string.base": "Offer name should be a type of text",
+    "string.empty": "Offer name is required",
+    "any.required": "Offer name is required",
+  }),
+  offerImage: Joi.string(),
+ 
+  offerPrice: Joi.number().integer().min(0).messages({
+    "number.base": "Offer price must be a number",
+    "number.min": "Offer price cannot be less than 0",
+  }),
+  validUpto: Joi.date().optional().messages({
+    'date.base': 'Date must be a valid date',
+  }),
 });
 
 const productValidationSchema = Joi.object({
@@ -349,5 +368,6 @@ module.exports = {
   approveReturnSchema,
   addToWishlistSchema ,
   paymentSchema,
-  updateItemSchema
+  updateItemSchema,
+  offerValidationSchema
 };
