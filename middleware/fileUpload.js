@@ -16,6 +16,7 @@ const uploadProduct = fileUpload("product");
 const uploadUser = fileUpload("user");
 const uploadTestimonial = fileUpload("testimonial");
 const uploadPayment = fileUpload("payment");
+const uploadOffer = fileUpload("offer")
 
 module.exports = {
   uploadBrand: uploadBrand,
@@ -23,4 +24,5 @@ module.exports = {
   uploadUser: uploadUser,
   uploadTestimonial: uploadTestimonial,
   uploadPayment:uploadPayment,
+  uploadOffer:uploadOffer
 };

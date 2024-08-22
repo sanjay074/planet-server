@@ -13,21 +13,62 @@ const generateTransactionId = () => {
   return prefix + timestamp.slice(-6) + uniquePart; 
 };
 
+
 const generateUpiQrcode = async (req, res) => {
   const { upiId, name, amount } = req.body;
   if (!upiId || !name || !amount) {
-      return res.status(400).json({status:0 ,message: 'UPI ID, Name, and Amount are required' });
+      return res.status(400).json({ status: 0, message: 'UPI ID, Name, and Amount are required' });
   }
 
-  const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(Date.now().toString())}&cu=INR`;
-  const transactionId = generateTransactionId();
+  const transactionId = generateTransactionId(); 
+  const currentTime = Date.now(); 
+  const expirationTime = currentTime + 5 * 60 * 1000;
+  const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
   try {
       const qrCodeData = await QRCode.toDataURL(upiString);
-      res.status(200).json({status:1 ,message:"Get payment payment methods" ,qrCode: qrCodeData, upiLink: upiString ,transactionId});
+      res.status(200).json({
+          status: 1,
+          message: "Get payment methods",
+          qrCode: qrCodeData,
+          upiLink: upiString,
+          transactionId,
+          expiresAt: expirationTime 
+      });
   } catch (err) {
       res.status(500).json({ error: 'Failed to generate QR code' });
   }
 };
+
+const validateQrcode = (req, res) => {
+  const { transactionId } = req.body;
+  const transaction = transactionId;
+  if (!transaction) {
+      return res.status(404).json({ status: 0, message: 'Transaction not found' });
+  }
+  const currentTime = Date.now();
+  if (currentTime > transaction.expiresAt) {
+      return res.status(400).json({ status: 0, message: 'QR code has expired' });
+  }
+
+  res.status(200).json({ status: 1, message: 'QR code is valid', transaction });
+};
+
+
+// const generateUpiQrcode = async (req, res) => {
+//   const { upiId, name, amount } = req.body;
+//   if (!upiId || !name || !amount) {
+//       return res.status(400).json({status:0,message: 'UPI ID, Name, and Amount are required' });
+//   }
+
+//   const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(Date.now().toString())}&cu=INR`;
+//   const transactionId = generateTransactionId();
+//   try {
+//       const qrCodeData = await QRCode.toDataURL(upiString);
+//       res.status(200).json({status:1 ,message:"Get payment payment methods" ,qrCode: qrCodeData, upiLink: upiString ,transactionId});
+//   } catch (err) {
+//       res.status(500).json({ error: 'Failed to generate QR code' });
+//   }
+// };
 
 
 const paymentHistory = async (req,res)=>{
@@ -39,7 +80,7 @@ const paymentHistory = async (req,res)=>{
       return res.status(400).json({ true:0,message: 'UTR number are required'});
     }
     const paymentHistory = new PaymentHistory({
-      utr,amount,transactionId,
+      utrNumber,amount,transactionId,
       userId:userId
     })
     const savePaymentHistory = await paymentHistory.save();
@@ -51,8 +92,6 @@ const paymentHistory = async (req,res)=>{
   });
    }
 }
-
-
 
 
 const generateQrcode = async (req,res)=>{
@@ -69,6 +108,8 @@ const generateQrcode = async (req,res)=>{
         res.status(500).json({ error: 'Failed to generate QR code' });
     }
   }
+
+ 
 
 const paymentType = async (req,res)=>{
     try{
@@ -194,5 +235,5 @@ const deletePaymentType = async (req,res)=>{
 
 
 module.exports = {
-  paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode,paymentHistory
+  paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode,paymentHistory,validateQrcode
 }

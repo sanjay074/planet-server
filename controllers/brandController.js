@@ -43,6 +43,9 @@ async function createBrand(req, res) {
     });
     const savedBrand = await newBrand.save();
 
+
+    
+
     return res
       .status(200)
       .json({ message: "New Brand Created Successfully", record: savedBrand });
