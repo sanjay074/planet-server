@@ -14,201 +14,102 @@ const mongoose = require("mongoose");
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 
-async function createProduct(req, res) {
+
+const createProduct = async (req, res) => {
   try {
-    // Validate the request body
-    const {error,value} = productValidationSchema.validate(req.body);
+    
+    const { error, value } = productValidationSchema.validate(req.body);
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // Validate referenced IDs
-    const {category,subCategory,brand,footSize,size,basePrice,finalPrice,numSize} = value;
-    if (
-      !isValidObjectId(category) ||
-      !isValidObjectId(subCategory) ||
-      !isValidObjectId(brand)
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Invalid category, subcategory, or brand ID" });
-    }
     
-    const discount = basePrice-finalPrice;
-    discountPrice  = ((discount/basePrice)*100).toFixed();
-
-
-    const Data = await Category.findById(category)
-    const categoryName = Data.name
-
-    if(categoryName === "shoes" ){
-
-        if(!footSize){
-             return res.status(400).send({
-            success:false,
-            message:"Foot size required"
-          })
-        }
-        //please empty the size and pantsize
-        if(size || numSize){
-          return res.status(400).send({
-            success:false,
-            message:"please empty size or numSize"
-          })
-        }
-      
-
-    // Check for the files
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: "No files uploaded" });
+    const { category, subCategory, brand, footSize, size, basePrice, finalPrice, numSize } = value;
+    if (!isValidObjectId(category) || !isValidObjectId(subCategory) || !isValidObjectId(brand)) {
+      return res.status(400).json({ error: "Invalid category, subcategory, or brand ID" });
     }
 
-    // Collect local file paths
-    const localFilePaths = req.files.map((file) => file.path);
-   //console.log(localFilePaths, "localfilepaths");
-
-    // Upload images to Cloudinary
-    const uploadResults = await uploadMultipleImagesOnCloudinary(
-      localFilePaths
-    );
-
-    // Check if any upload failed
-    if (uploadResults.some((result) => !result)) {
-      return res
-        .status(500)
-        .json({ error: "Failed to upload one or more images" });
-    }
-
-
-    // Create a new Product instance and save it
-    const newProduct = new Product({
-      
-      ...value,
-      discountPrice,
-      images: uploadResults.map((result) => result.secure_url),
-
-    });
-    const savedProduct = await newProduct.save();
-
-     return res.status(201).json({
-      message: "New Product Created Successfully",
-      record: savedProduct,
-    });
-  }
-
-    else {
-      const SubData =await SubCategory.findById(subCategory)
-      const SubCategoryName = SubData.name
-
-      if(SubCategoryName === "Shirt" || 
-         SubCategoryName === "TShirt"||
-         SubCategoryName === "Jeans" ||
-         SubCategoryName === "tshirt"||
-         SubCategoryName === "jeans" ||
-         SubCategoryName === "shirts"
-        
-        ){ //Shirt or t-shirt or jeans
-
-     // Check for the files
-      if(!size && !numSize){
-        return res.status(400).send({
-        success:false,
-        message:"Size or NumSize is required for this type of product"
-      })
-    }
-
-    //null the footsize and pantSize
-    if(footSize){
-        return res.status(400).send({
-        success:false,
-        message:"please empty foot Size"
-    })
-   }
-
-
-    //images file check 
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: "No files uploaded" });
-    }
-
-    // Collect local file paths
-    const localFilePaths = req.files.map((file) => file.path);
-    //console.log(localFilePaths, "localfilepaths");
-
-    // Upload images to Cloudinary
-    const uploadResults = await uploadMultipleImagesOnCloudinary(
-      localFilePaths
-    );
-
-    // Check if any upload failed
-    if (uploadResults.some((result) => !result)) {
-      return res
-        .status(500)
-        .json({ error: "Failed to upload one or more images" });
-    }
-
-    // Create a new Product instance and save it
-    const newProduct = new Product({
-      ...value,
-      discountPrice,
-      images: uploadResults.map((result) => result.secure_url),
-    });
-    const savedProduct = await newProduct.save();
-
-     return res.status(201).json({
-      message: "New Product Created Successfully",
-      record: savedProduct,
-    });
-
-  }
-
-    else{
-
-       //images file check 
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: "No files uploaded" });
-    }
-
-    // Collect local file paths
-    const localFilePaths = req.files.map((file) => file.path);
-    //console.log(localFilePaths, "localfilepaths");
-
-    // Upload images to Cloudinary
-    const uploadResults = await uploadMultipleImagesOnCloudinary(
-      localFilePaths
-    );
-
-    // Check if any upload failed
-    if (uploadResults.some((result) => !result)) {
-      return res
-        .status(500)
-        .json({ error: "Failed to upload one or more images" });
-    }
-
-    // Create a new Product instance and save it
-    const newProduct = new Product({
-      ...value,
-      discountPrice,
-      images: uploadResults.map((result) => result.secure_url),
-    });
-    const savedProduct = await newProduct.save();
-
-     return res.status(201).json({
-      message: "New Product Created Successfully",
-      record: savedProduct,
-    });
-    }
-    } 
     
-}catch (error){  
+    const discount = basePrice - finalPrice;
+    const discountPrice = ((discount / basePrice) * 100).toFixed();
+
+    
+    const categoryData = await Category.findById(category);
+    if (!categoryData) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const categoryName = categoryData.name.toLowerCase();
+
+    
+    if (categoryName === "shoes") {
+      if (!footSize) {
+        return res.status(400).json({ success: false, message: "Foot size required" });
+      }
+      if (size || numSize) {
+        return res.status(400).json({ success: false, message: "Please empty size or numSize" });
+      }
+    } else {
+      const subCategoryData = await SubCategory.findById(subCategory);
+      if (!subCategoryData) {
+        return res.status(404).json({ error: "Subcategory not found" });
+      }
+
+      const subCategoryName = subCategoryData.name.toLowerCase();
+      const isClothingCategory = ["shirt", "tshirt", "jeans"].includes(subCategoryName);
+
+      if (isClothingCategory) {
+        if (!size && !numSize) {
+          return res.status(400).json({
+            success: false,
+            message: "Size or NumSize is required for this type of product",
+          });
+        }
+
+        if (footSize) {
+          return res.status(400).json({ success: false, message: "Please empty foot size" });
+        }
+      }
+    }
+
+    
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    
+    const localFilePaths = req.files.map((file) => file.path);
+    const uploadResults = await uploadMultipleImagesOnCloudinary(localFilePaths);
+
+    if (uploadResults.some((result) => !result)) {
+      return res.status(500).json({ error: "Failed to upload one or more images" });
+    }
+
+    
+    const newProduct = new Product({
+      ...value,
+      discountPrice,
+      images: uploadResults.map((result) => result.secure_url),
+    });
+    const savedProduct = await newProduct.save();
+
+    return res.status(201).json({
+      message: "New Product Created Successfully",
+      record: savedProduct,
+    });
+
+  } catch (error) {
     console.error("Error creating product:", error);
-    // Duplicate entry error handling
-    if(error.code === 11000) {
+
+    if (error.code === 11000) {
       return res.status(422).json({ message: "Duplicate entry found" });
     }
     return res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
+
+
+
 
 
 
