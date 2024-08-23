@@ -135,9 +135,41 @@ async function deleteSubCategory(req, res) {
     }
     res.status(200).json({ success: true, message: "SubCategory deleted" });
   } catch (error) {
-    res.status(200).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 }
+
+
+async function getSubCategoryWithCategory(req,res){
+try { 
+
+  const id = req.params.id
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    res.status(400).send({
+      success:false,
+      message:"this id is not valid "
+    })
+  }
+
+  const getAllSub = await  SubCategory.find({category:id});
+
+  return res.status(200).send({
+      success:true,
+      message:"here is your all data",
+      total:getAllSub.length,
+      data:getAllSub
+  })
+
+  }catch(error){
+    return res.status(500).send({
+    success:false,
+    message:"error in getting subCat by cat ",
+    error:error.message
+   })
+}
+}
+
+
 
 module.exports = {
   createSubCategory,
@@ -145,4 +177,5 @@ module.exports = {
   getSubCategoryById,
   updateSubCategory,
   deleteSubCategory,
+  getSubCategoryWithCategory
 };

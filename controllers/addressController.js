@@ -120,7 +120,7 @@ const getAddress = async(req,res) => {
       })
     }
 
-    const myAddressData = await Address.find({userId:userId})
+          const myAddressData = await Address.find({userId:userId})
             return res.status(200).send({
             success:true,
             message:"Here is your  data",
