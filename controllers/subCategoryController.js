@@ -34,7 +34,7 @@ async function createSubCategory(req, res) {
 
 async function getAllSubCategory(req, res) {
   try {
-    const response = await SubCategory.find({});
+    const response = await SubCategory.find({}).populate("category");
     res.status(200).json({
       success: true,
       message: "record fetched successfully",

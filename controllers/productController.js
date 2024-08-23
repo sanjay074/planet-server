@@ -100,7 +100,14 @@ async function createProduct(req, res) {
       const SubData =await SubCategory.findById(subCategory)
       const SubCategoryName = SubData.name
 
-      if(SubCategoryName === "Shirt" || SubCategoryName === "TShirt" || SubCategoryName === "Jeans"){ //Shirt or t-shirt or jeans
+      if(SubCategoryName === "Shirt" || 
+         SubCategoryName === "TShirt"||
+         SubCategoryName === "Jeans" ||
+         SubCategoryName === "tshirt"||
+         SubCategoryName === "jeans" ||
+         SubCategoryName === "shirts"
+        
+        ){ //Shirt or t-shirt or jeans
 
      // Check for the files
       if(!size && !numSize){
