@@ -39,6 +39,7 @@ const generateUpiQrcode = async (req, res) => {
   }
 };
 
+
 const validateQrcode = (req, res) => {
   const { transactionId } = req.body;
   const transaction = transactionId;
@@ -109,7 +110,7 @@ const generateQrcode = async (req,res)=>{
     }
   }
 
- 
+
 
 const paymentType = async (req,res)=>{
     try{

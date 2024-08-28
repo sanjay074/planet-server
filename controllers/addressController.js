@@ -30,7 +30,6 @@ const createAddress = async (req, res) => {
       })
     }
 
-
     // Destructure validated values from the request body
     const { name, mobile, email, Pincode, Landmark, district, state, addressAs, fullAddress } = req.body;
 
@@ -57,10 +56,6 @@ const createAddress = async (req, res) => {
 //update the address 
 const updateAddress = async (req, res) => {
   try {
-
-
-    
-
     // Destructure validated values from the request body
     const { name, mobile, email, Pincode, Landmark, district, state, addressAs,fullAddress} = req.body;
 
@@ -120,7 +115,7 @@ const getAddress = async(req,res) => {
       })
     }
 
-    const myAddressData = await Address.find({userId:userId})
+    const myAddressData = await Address.find({ userId: new mongoose.Types.ObjectId(userId) })
             return res.status(200).send({
             success:true,
             message:"Here is your  data",
