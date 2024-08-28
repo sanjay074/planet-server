@@ -115,9 +115,11 @@ const getcart = async (req, res) => {
     let deliveryCharges = 0;
     if (subtotal < 1500) {
       deliveryCharges = 99;
+    } else {
+      deliveryCharges = "Free";
     }
     
-    const totalAmount = subtotal + deliveryCharges;
+    const totalAmount = subtotal + (deliveryCharges === "Free" ? 0 : deliveryCharges);
     
     const orderSummary = {
       total,
@@ -140,6 +142,7 @@ const getcart = async (req, res) => {
     });
   }
 };
+
 
 //delete from cart 
 const deleteFromCart = async (req, res) => {
