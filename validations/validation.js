@@ -336,11 +336,14 @@ const paymentSchema = Joi.object({
     products: Joi.array().items(
         Joi.object({
             productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
-            quantity: Joi.number().positive().required()
+            quantity: Joi.number().positive().required(),
+            size:Joi.string().required().messages({
+              "string.empty": "Item size  is required.",
+              "any.required": "Item size is a mandatory field."
+            })
         })
     ).required(),
     
-    action: Joi.string().valid('increment', 'decrement')
   });
 
 module.exports = {
