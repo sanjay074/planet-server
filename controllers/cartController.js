@@ -100,7 +100,7 @@ const getcart = async (req, res) => {
       });
     }
     
-    const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size discountPrice');
+    const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size numSize footSize discountPrice');
     
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
