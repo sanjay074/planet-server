@@ -82,6 +82,13 @@ const paymentHistory = async (req,res)=>{
     if (!utrNumber) {
       return res.status(400).json({ true:0,message: 'UTR number are required'});
     }
+    const findUtr = await PaymentHistory.findOne({utrNumber});
+    if(findUtr){
+      return res.status(400).json({
+         status:0,
+         message:"Invalid UTR Number"
+      })
+    }
     const paymentHistory = new PaymentHistory({
       utrNumber,amount,transactionId,
       userId:userId
