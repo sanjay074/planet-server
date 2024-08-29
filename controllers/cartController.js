@@ -66,8 +66,7 @@ const addToCart = async (req, res) => {
         cart.cartItems.push({ productId, quantity, size });
       }
     }
-
-   
+    
     await cart.save();
 
     res.status(200).json({
