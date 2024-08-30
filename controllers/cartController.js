@@ -102,8 +102,19 @@ const getcart = async (req, res) => {
     
     const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size numSize footSize discountPrice');
     
-    if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
+    if (!cart || cart.cartItems.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Cart is empty',
+        cart: null,
+        orderSummary: {
+          total: 0,
+          discount: 0,
+          subtotal: 0,
+          deliveryCharges: 0,
+          totalPrice: 0
+        }
+      });
     }
     
     let subtotal = 0;
@@ -118,10 +129,9 @@ const getcart = async (req, res) => {
     });
     
     totalDiscount = total - subtotal;
-
-  
+    
     let deliveryCharges = 0;
-    if (subtotal < 1500) {
+    if (subtotal < 1500 && subtotal > 0) {
       deliveryCharges = 99;
     } else {
       deliveryCharges = "Free";
@@ -134,7 +144,7 @@ const getcart = async (req, res) => {
       discount: totalDiscount,
       subtotal,
       deliveryCharges,
-      totalPrice: totalAmount
+      totalPrice: subtotal === 0 ? 0 : totalAmount
     };
     
     return res.status(200).json({
