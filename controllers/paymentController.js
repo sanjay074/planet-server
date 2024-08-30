@@ -14,69 +14,69 @@ const generateTransactionId = () => {
   return prefix + timestamp.slice(-6) + uniquePart; 
 };
 
-const generateUpiQrcode = async (req, res) => {
-  const { amount } = req.body;
-  
-  if (!amount) {
-    return res.status(400).json({ status: 0, message: 'Amount is required' });
-  }
-
-  const upiId = process.env.upiId;
-  const upiName = process.env.upiNmae;
-  const transactionId = generateTransactionId(); 
-  const currentTime = Date.now(); 
-  const expirationTime = currentTime + 5 * 60 * 1000;
-  const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
-
-  try {
-    const qrCodeData = await QRCode.toDataURL(upiString);
-    const googlePayLink = `https://pay.google.com/gp/w/u/0/home/activity?link=${encodeURIComponent(upiString)}`;
-    const phonePeLink = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
-    const paytmLink = `paytmmp://upi/pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
-
-    res.status(200).json({
-      status: 1,
-      message: "Payment methods generated successfully",
-      qrCode: qrCodeData,
-      transactionId,
-      expiresAt: expirationTime,
-      googlePayLink,
-      phonePeLink,
-      paytmLink,
-      upiLink: upiString,
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to generate QR code' });
-  }
-};
-
-
 // const generateUpiQrcode = async (req, res) => {
-// const {amount } = req.body;
+//   const { amount } = req.body;
+  
 //   if (!amount) {
-//       return res.status(400).json({ status: 0, message: 'Amount are required' });
+//     return res.status(400).json({ status: 0, message: 'Amount is required' });
 //   }
-//   const upiId = process.env.upiId;
 
-//   const upiNmae = process.env.upiNmae
+//   const upiId = process.env.upiId;
+//   const upiName = process.env.upiName;
 //   const transactionId = generateTransactionId(); 
 //   const currentTime = Date.now(); 
-//   const expirationTime = currentTime + 5 * 60*1000;
-//   const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiNmae)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
+//   const expirationTime = currentTime + 5 * 60 * 1000;
+//   const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
+
 //   try {
-//       const qrCodeData = await QRCode.toDataURL(upiString);
-//       res.status(200).json({
-//           status: 1,
-//           message: "Get payment methods successfully",
-//           qrCode: qrCodeData,
-//           upiLink: upiString,
-//           transactionId,
-//           expiresAt: expirationTime 
-//       });
+//     const qrCodeData = await QRCode.toDataURL(upiString);
+//     const googlePayLink = `https://pay.google.com/gp/w/u/0/home/activity?link=${encodeURIComponent(upiString)}`;
+//     const phonePeLink = `phonepe://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
+//     const paytmLink = `paytmmp://upi/pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiName)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
+
+//     res.status(200).json({
+//       status: 1,
+//       message: "Payment methods generated successfully",
+//       qrCode: qrCodeData,
+//       transactionId,
+//       expiresAt: expirationTime,
+//       googlePayLink,
+//       phonePeLink,
+//       paytmLink,
+//       upiLink: upiString,
+//     });
 //   } catch (error) {
-//       res.status(500).json({ error: 'Failed to generate QR code' });
+//     res.status(500).json({ error: 'Failed to generate QR code' });
 //   }
 // };
+
+
+const generateUpiQrcode = async (req, res) => {
+const {amount } = req.body;
+  if (!amount) {
+      return res.status(400).json({ status: 0, message: 'Amount are required' });
+  }
+  const upiId = process.env.upiId;
+
+  const upiNmae = process.env.upiNmae
+  const transactionId = generateTransactionId(); 
+  const currentTime = Date.now(); 
+  const expirationTime = currentTime + 5 * 60*1000;
+  const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiNmae)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
+  try {
+      const qrCodeData = await QRCode.toDataURL(upiString);
+      res.status(200).json({
+          status: 1,
+          message: "Get payment methods successfully",
+          qrCode: qrCodeData,
+          upiLink: upiString,
+          transactionId,
+          expiresAt: expirationTime 
+      });
+  } catch (error) {
+      res.status(500).json({ error: 'Failed to generate QR code' });
+  }
+};
 
 
 const validateQrcode = (req, res) => {
