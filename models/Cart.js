@@ -1,3 +1,4 @@
+const { required } = require("joi")
 const mongoose =require("mongoose")
 const cartSchema =new mongoose.Schema({
     userId:{
@@ -15,7 +16,10 @@ const cartSchema =new mongoose.Schema({
             type:Number,
             required:true,
             default:1
-        }
+        },
+        size:{
+            type:String,
+        }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
     }
 ],
 
