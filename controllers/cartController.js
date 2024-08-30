@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const Cart = require('../models/Cart'); 
 const mongoose = require("mongoose");
-const { updateItemSchema, addToCartSchema} = require('../validations/validation');
+const { updateItemSchema, addToCartSchema,oneOrderSummarySchema} = require('../validations/validation');
 
 const addToCart = async (req, res) => {
   try {
@@ -162,6 +162,56 @@ const getcart = async (req, res) => {
 };
 
 
+const oneItemOrderSummary = async (req,res)=>{
+  try{
+  
+    const { error } = oneOrderSummarySchema.validate(req.body);
+    if (error) {
+      return res.status(400).send({
+        success: false,
+        message: error.details[0].message
+      });
+    }
+    const {productId,selectedSize} = req.body;
+    const productItem = await Product.findOne({_id:productId});
+    if(!productItem){
+      return res.status(400).json({
+        status:0,
+        message:"Product not found"
+      })
+    }
+    let subtotal = productItem.finalPrice;
+    let totalDiscount =productItem.discountPrice ;
+    let total = productItem.basePrice;
+    let deliveryCharges = 0;
+    if (subtotal< 1500 && subtotal > 0) {
+      deliveryCharges = 99;
+    } else {
+      deliveryCharges = "Free";
+    }
+    const totalAmount = subtotal + (deliveryCharges === "Free" ? 0 : deliveryCharges);
+    const orderSummary = {
+      total,
+      discount: totalDiscount,
+      subtotal,
+      deliveryCharges,
+      totalPrice: subtotal === 0 ? 0 : totalAmount
+    };
+    
+    return res.status(200).json({
+      status:1,
+      message:"Get data sucessfully",
+      productItem,orderSummary,selectedSize
+    })
+  }catch(error){
+    return res.status(500).json({
+      success: false,
+      message: error.message.toString(),
+    });
+  }
+}
+
+
 //delete from cart 
 const deleteFromCart = async (req, res) => {
   try {
@@ -268,4 +318,4 @@ const  deleteCartController =async(req,res)=>{
   }
 }
 
-module.exports ={addToCart,getcart,deleteFromCart,updateItemQuantity,deleteCartController}
+module.exports ={addToCart,getcart,deleteFromCart,updateItemQuantity,deleteCartController,oneItemOrderSummary}
