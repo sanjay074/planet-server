@@ -4,24 +4,31 @@ const Address = require("../models/userAddress");
 const Product = require("../models/Product");
 const { JoiOrderSchema } = require("../validations/validation");
 
+const generateOrderId = () => {
+  const prefix = 'OD';
+  const timestamp = Date.now().toString();
+  const uniquePart = Math.floor(100000 + Math.random() * 900000).toString(); 
+  return prefix + timestamp.slice(-6) + uniquePart; 
+};
+
 const createOrder = async (req, res) => {
   try {
-      // Validate request body
-      const { error } = JoiOrderSchema.validate(req.body);
-      if (error) {
-        return res.status(400).send({
-          success: false,
-          message: error.details[0].message
-        });
-      }
+
+    const { error } = JoiOrderSchema.validate(req.body);
+    if (error) {
+      return res.status(400).send({
+        success: false,
+        message: error.details[0].message
+      });
+    }
 
     const userId = req.userId;
-    const { addressId, products } = req.body;
+    const { addressId, products, size } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(addressId)) {
       return res.status(400).send({
         success: false,
-        message: "address id not valid"
+        message: "Address ID is not valid"
       });
     }
 
@@ -29,7 +36,7 @@ const createOrder = async (req, res) => {
     if (!address) {
       return res.status(401).send({
         success: false,
-        message: "Address is not found"
+        message: "Address not found"
       });
     }
 
@@ -38,20 +45,19 @@ const createOrder = async (req, res) => {
 
     if (Array.isArray(products) && products.length > 0) {
       for (const productData of products) {
-        const { productId, quantity } = productData;
+        const { productId, quantity, size } = productData;
         if (!mongoose.Types.ObjectId.isValid(productId)) {
           return res.status(400).send({
             success: false,
-            message: "product id is not valid "
+            message: "Product ID is not valid"
           });
         }
 
         const product = await Product.findById(productId);
-
         if (!product) {
           return res.status(400).send({
             success: false,
-            message: "Product is not available"
+            message: "Product not available"
           });
         }
         if (product.quantity < quantity) {
@@ -60,41 +66,46 @@ const createOrder = async (req, res) => {
             message: "Stock not available"
           });
         }
-        totalPrice += product.finalPrice*quantity;
-        orderItems.push({ productId, quantity });
+
+        totalPrice += product.finalPrice * quantity;
+        orderItems.push({ productId, quantity, size });
       }
     }
 
+    const getorderId = generateOrderId();
 
-  
     const order = new Order({
       userId,
       orderItems,
       address: addressId,
-      totalPrice
+      totalPrice,
+      orderId: getorderId, 
     });
     await order.save();
 
+    // Update the product quantities
     for (const item of orderItems) {
       await Product.findByIdAndUpdate(item.productId, {
         $inc: { quantity: -item.quantity }
       });
     }
+    
 
-   
     return res.status(200).json({
       success: true,
       message: "Order placed successfully",
+      orderId: getorderId 
     });
 
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "error in creating the order",
-      error:error.message
+      message: "Error in creating the order",
+      error: error.message
     });
   }
 };
+
 
 const getAllOrder = async (req, res) => {
   try {

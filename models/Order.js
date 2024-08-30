@@ -1,3 +1,4 @@
+const { types, required } = require("joi");
 const  mongoose  = require("mongoose");
 const orderSchema =  mongoose.Schema({
     userId:{
@@ -14,6 +15,9 @@ const orderSchema =  mongoose.Schema({
         quantity:{
             type:Number,
             required:true
+        },
+        size:{
+            type:String
         }
     }],
     address:{
@@ -29,9 +33,18 @@ const orderSchema =  mongoose.Schema({
         type:Date,
         default:Date.now()
     },
+    orderId:{
+        type:String,
+        required:true
+    },
+    paymentStatus: { 
+        type: String, 
+        enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
+        default: 'Pending' 
+    },
     status:{
         type:String,
-        enum:["Processed","shipped","inRoute",
+        enum:["Processed","shipped","inRoute","Confirmed",
                "Arrival","delivered","Returned",
                "cancelled","outofStock"],
         default:"Processed"
