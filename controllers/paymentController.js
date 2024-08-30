@@ -15,26 +15,28 @@ const generateTransactionId = () => {
 
 
 const generateUpiQrcode = async (req, res) => {
-  const { upiId, name, amount } = req.body;
-  if (!upiId || !name || !amount) {
-      return res.status(400).json({ status: 0, message: 'UPI ID, Name, and Amount are required' });
+const {amount } = req.body;
+  if (!amount) {
+      return res.status(400).json({ status: 0, message: 'Amount are required' });
   }
+  const upiId = process.env.upiId;
 
+  const upiNmae = process.env.upiNmae
   const transactionId = generateTransactionId(); 
   const currentTime = Date.now(); 
-  const expirationTime = currentTime + 5 * 60 * 1000;
-  const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
+  const expirationTime = currentTime + 5 * 60*1000;
+  const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(upiNmae)}&am=${encodeURIComponent(amount)}&tr=${encodeURIComponent(transactionId)}&cu=INR`;
   try {
       const qrCodeData = await QRCode.toDataURL(upiString);
       res.status(200).json({
           status: 1,
-          message: "Get payment methods",
+          message: "Get payment methods successfully",
           qrCode: qrCodeData,
           upiLink: upiString,
           transactionId,
           expiresAt: expirationTime 
       });
-  } catch (err) {
+  } catch (error) {
       res.status(500).json({ error: 'Failed to generate QR code' });
   }
 };
@@ -80,12 +82,19 @@ const paymentHistory = async (req,res)=>{
     if (!utrNumber) {
       return res.status(400).json({ true:0,message: 'UTR number are required'});
     }
+    const findUtr = await PaymentHistory.findOne({utrNumber});
+    if(findUtr){
+      return res.status(400).json({
+         status:0,
+         message:"Invalid UTR Number"
+      })
+    }
     const paymentHistory = new PaymentHistory({
       utrNumber,amount,transactionId,
       userId:userId
     })
     const savePaymentHistory = await paymentHistory.save();
-    return res.status(201).json({ status: 1, message: 'Payment successfully'});
+    return res.status(201).json({ status: 1, message: 'Payment  successfully'});
    }catch(err){
     return res.status(500).json({
       status: 0,

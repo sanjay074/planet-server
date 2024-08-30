@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const Cart = require('../models/Cart'); 
 const mongoose = require("mongoose");
-const { updateItemSchema, addToCartSchema} = require('../validations/validation');
+const { updateItemSchema, addToCartSchema,oneOrderSummarySchema} = require('../validations/validation');
 
 const addToCart = async (req, res) => {
   try {
@@ -66,8 +66,7 @@ const addToCart = async (req, res) => {
         cart.cartItems.push({ productId, quantity, size });
       }
     }
-
-   
+    
     await cart.save();
 
     res.status(200).json({
@@ -101,10 +100,21 @@ const getcart = async (req, res) => {
       });
     }
     
-    const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size discountPrice');
+    const cart = await Cart.findOne({ userId }).populate('cartItems.productId', 'name description finalPrice basePrice images size numSize footSize discountPrice');
     
-    if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
+    if (!cart || cart.cartItems.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'Cart is empty',
+        cart: null,
+        orderSummary: {
+          total: 0,
+          discount: 0,
+          subtotal: 0,
+          deliveryCharges: 0,
+          totalPrice: 0
+        }
+      });
     }
     
     let subtotal = 0;
@@ -119,10 +129,9 @@ const getcart = async (req, res) => {
     });
     
     totalDiscount = total - subtotal;
-
-  
+    
     let deliveryCharges = 0;
-    if (subtotal < 1500) {
+    if (subtotal < 1500 && subtotal > 0) {
       deliveryCharges = 99;
     } else {
       deliveryCharges = "Free";
@@ -135,7 +144,7 @@ const getcart = async (req, res) => {
       discount: totalDiscount,
       subtotal,
       deliveryCharges,
-      totalPrice: totalAmount
+      totalPrice: subtotal === 0 ? 0 : totalAmount
     };
     
     return res.status(200).json({
@@ -151,6 +160,56 @@ const getcart = async (req, res) => {
     });
   }
 };
+
+
+const oneItemOrderSummary = async (req,res)=>{
+  try{
+  
+    const { error } = oneOrderSummarySchema.validate(req.body);
+    if (error) {
+      return res.status(400).send({
+        success: false,
+        message: error.details[0].message
+      });
+    }
+    const {productId,selectedSize} = req.body;
+    const productItem = await Product.findOne({_id:productId});
+    if(!productItem){
+      return res.status(400).json({
+        status:0,
+        message:"Product not found"
+      })
+    }
+    let subtotal = productItem.finalPrice;
+    let totalDiscount =productItem.discountPrice ;
+    let total = productItem.basePrice;
+    let deliveryCharges = 0;
+    if (subtotal< 1500 && subtotal > 0) {
+      deliveryCharges = 99;
+    } else {
+      deliveryCharges = "Free";
+    }
+    const totalAmount = subtotal + (deliveryCharges === "Free" ? 0 : deliveryCharges);
+    const orderSummary = {
+      total,
+      discount: totalDiscount,
+      subtotal,
+      deliveryCharges,
+      totalPrice: subtotal === 0 ? 0 : totalAmount
+    };
+    
+    return res.status(200).json({
+      status:1,
+      message:"Get data sucessfully",
+      productItem,orderSummary,selectedSize
+    })
+  }catch(error){
+    return res.status(500).json({
+      success: false,
+      message: error.message.toString(),
+    });
+  }
+}
 
 
 //delete from cart 
@@ -259,4 +318,4 @@ const  deleteCartController =async(req,res)=>{
   }
 }
 
-module.exports ={addToCart,getcart,deleteFromCart,updateItemQuantity,deleteCartController}
+module.exports ={addToCart,getcart,deleteFromCart,updateItemQuantity,deleteCartController,oneItemOrderSummary}

@@ -4,8 +4,6 @@ const Address = require("../models/userAddress");
 const Product = require("../models/Product");
 const { JoiOrderSchema } = require("../validations/validation");
 
-// Joi validation schemas
-
 const createOrder = async (req, res) => {
   try {
       // Validate request body
@@ -16,8 +14,6 @@ const createOrder = async (req, res) => {
           message: error.details[0].message
         });
       }
-  
-
 
     const userId = req.userId;
     const { addressId, products } = req.body;
