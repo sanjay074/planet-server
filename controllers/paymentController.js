@@ -15,14 +15,14 @@ const generateTransactionId = () => {
 };
 
 const generateUpiQrcode = async (req, res) => {
-  const { amount,upiId,upiName } = req.body;
+  const { amount} = req.body;
   
   if (!amount) {
     return res.status(400).json({ status: 0, message: 'Amount is required' });
   }
 
-  // const upiId = process.env.upiId;
-  // const upiName = process.env.upiName;
+  const upiId = process.env.upiId;
+  const upiName = process.env.upiName;
   const transactionId = generateTransactionId(); 
   const currentTime = Date.now(); 
   const expirationTime = currentTime + 5 * 60 * 1000;
