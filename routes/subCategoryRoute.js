@@ -7,6 +7,7 @@ const {
   getSubCategoryById,
   updateSubCategory,
   deleteSubCategory,
+  getSubCategoryWithCategory,
 } = require("../controllers/subCategoryController");
 const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
 
@@ -15,7 +16,9 @@ subCategoryRouter
 .get("/", getAllSubCategory)
 .get("/:_id", getSubCategoryById)
 .put("/:_id",authMiddleware,isAdminMd,updateSubCategory)
-.delete("/:_id",authMiddleware,isAdminMd,deleteSubCategory);
+.delete("/:_id",authMiddleware,isAdminMd,deleteSubCategory)
+.get("/getSubCatbyCat/:id",authMiddleware,getSubCategoryWithCategory)
+
   
 
 module.exports = subCategoryRouter;
