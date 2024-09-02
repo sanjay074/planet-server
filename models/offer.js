@@ -8,8 +8,12 @@ name:{
 
 offerImage:{
    type:String,
-//    required:[true,"offer image is required"]
 },
+offerType:{
+    type:String,
+    enum:["mens","womens","footwear"]
+},
+
 offerPrice:{
     type:Number
 },

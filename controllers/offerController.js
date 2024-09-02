@@ -24,6 +24,7 @@ const  createOffer = async(req,res)=>{
            const newOffer = new offer({
             name:req.body.name,
             offerImage:uploadResult.secure_url,
+            offerType:req.body.offerType,
 
       })
    
@@ -37,7 +38,8 @@ const  createOffer = async(req,res)=>{
           const newOffer = new offer({
            name:req.body.name,
            offerPrice:req.body.offerPrice,
-           validUpto:req.body.validUpto
+           validUpto:req.body.validUpto,
+           offerType:req.body.offerType,
     
      })
      const savedBrand = await newOffer.save();
@@ -58,6 +60,7 @@ const  createOffer = async(req,res)=>{
 
 const getalloffer = async(req,res)=>{
     try{
+         
         const data = await  offer.find({})
         return res.status(200).send({
             success:200,
@@ -67,10 +70,42 @@ const getalloffer = async(req,res)=>{
         })
 
     }catch(error){
-       return res.status(400).send({
+        return res.status(400).send({
         success:false,
         message:"error in getting the offer "
        })
+    }
+}
+const offerTypeGroup =async(req,res)=>{
+    try{
+      const offerType = req.params.offer;
+      const allOffers = await offer.aggregate([
+         {
+            $match:{offerType}
+         },
+         {
+            $group:{
+                "_id":"$offerType",
+                "totaloffers":{$sum:1},
+                "offers":{$push:"$$ROOT"}
+            }
+         }
+      ])
+      return res.status(200).send({
+        success:true,
+        message:"here is your all data",
+        allOffers
+      })
+ 
+
+
+
+    }catch(error){
+            return res.status(400).send({
+            success:false,
+            message:"error in getting the offer "
+           })
+
     }
 }
 
@@ -215,4 +250,4 @@ const updateOffer = async (req, res) => {
     }
 };
 
-module.exports = {createOffer,getalloffer,deleteoffer,getSingleOffer,updateOffer}
+module.exports = {createOffer,getalloffer,deleteoffer,getSingleOffer,updateOffer,offerTypeGroup}

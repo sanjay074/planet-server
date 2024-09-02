@@ -62,6 +62,7 @@ const offerValidationSchema = Joi.object({
   validUpto:Joi.date().optional().messages({
     'date.base': 'Date must be a valid date',
   }),
+  offerType:Joi.string().valid("mens","womens","footwear").optional()
 });
 
 const productValidationSchema = Joi.object({
