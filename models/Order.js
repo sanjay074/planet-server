@@ -1,4 +1,3 @@
-const { types, required } = require("joi");
 const  mongoose  = require("mongoose");
 const orderSchema =  mongoose.Schema({
     userId:{
