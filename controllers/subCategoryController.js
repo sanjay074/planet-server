@@ -1,3 +1,4 @@
+const { object } = require("joi");
 const SubCategory = require("../models/SubCategory");
 const { subCategoryValidationSchema } = require("../validations/validation");
 const mongoose = require("mongoose");
@@ -72,52 +73,68 @@ async function getSubCategoryById(req, res) {
   }
 }
 
+
+
 async function updateSubCategory(req, res) {
   try {
-    const subCatId = req.params._id;
-    if (!isValidObjectId(subCatId)) {
-      return res.status(400).json({
+    const _id = req.params._id;
+    const { name, category } = req.body;
+
+    // Validate the request body
+    const { error } = subCategoryValidationSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    // Check if the provided ID is valid
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      return res.status(400).send({
         success: false,
-        message:
-          "Invalid Category ID format. Please provide a valid MongoDB ObjectId.",
+        message: "Please provide a valid ID",
       });
     }
 
-    const subCatData = req.body;
-    const { error } = subCategoryValidationSchema.validate(subCatData);
-
-    if (error) {
-      res.status(400).json({ message: error.details[0].message });
+    // Check if the sub-category name already exists
+    const existName = await SubCategory.findOne({ name });
+    if (existName) {
+      return res.status(400).send({
+        success: false,
+        message: "This name is already registered",
+      });
     }
 
-    // Check if the subCategory name already exists
-    const existingCategory = await SubCategory.findOne({
-      name: subCatData.name,
-    });
-    if (existingCategory && existingCategory._id.toString() !== categoryId) {
-      return res.status(422).json({ message: "Category name already exists" });
-    }
+    // Update the sub-category
+    const data = await SubCategory.findByIdAndUpdate(
+      { _id },
+      { name, category },
+      { new: true }
+    );
 
-    const response = await SubCategory.findByIdAndUpdate(subCatId, subCatData, {
-      new: true,
-      runValidators: true,
-    });
-    if (!response) {
-      res.status(404).json({ message: "subCategory not found" });
+    // Check if the update was successful
+    if (data) {
+      return res.status(200).send({
+        success: true,
+        message: "Your data has been updated successfully",
+        data,
+      });
+     } 
+     else {
+      return res.status(404).send({
+        success: false,
+        message: "Sub-category not found",
+      });
     }
-    res.status(200).json({
-      success: true,
-      message: "record updated successfully",
-      record: response,
-    });
   } catch (error) {
-    if (error.code === 11000) {
-      res.status(422).json({ message: "Category name already exists" });
-    } else {
-      res.status(500).json({ message: "Internal Server Error" });
-    }
+    return res.status(500).send({
+      success: false,
+      message: "Error in updating the sub-category",
+      error: error.message,
+    });
   }
 }
+
+
+
 
 async function deleteSubCategory(req, res) {
   try {
