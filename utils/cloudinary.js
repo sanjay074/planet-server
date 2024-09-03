@@ -40,6 +40,9 @@ const getCloudinaryPublicId = (url) => {
   return publicId;
 };
 
+
+
+
 const uploadMultipleImagesOnCloudinary = async (localFilePaths) => {
   try {
     if (!localFilePaths || !Array.isArray(localFilePaths)) return [];

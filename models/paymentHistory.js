@@ -1,5 +1,10 @@
+const { required } = require("joi");
 const mongoose =require("mongoose");
 const paymentHistorySchema =new mongoose.Schema({
+    orderId: {
+       type:String,
+       required:true
+    },
     userId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'users',
@@ -18,9 +23,9 @@ const paymentHistorySchema =new mongoose.Schema({
         required:true
     },
     status:{
-        type:String,
-        enum:["PROCESSED","PENDING","COMPLETED","FAILED","CANCELLED"],
-        default:"PROCESSED"
+        type: String, 
+        enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
+        default: 'Completed' 
     }
 },{timestamps:true})
 
