@@ -56,7 +56,7 @@ const createProduct = async (req, res) => {
       }
 
       const subCategoryName = subCategoryData.name.toLowerCase();
-      const isClothingCategory = ["shirt", "tshirt", "jeans"].includes(subCategoryName);
+      const isClothingCategory = ["shirt", "tshirt", "jeans","dress"].includes(subCategoryName);
 
       if (isClothingCategory) {
         if (!size && !numSize) {
@@ -363,6 +363,111 @@ async function getAllProduct(req,res){
   }
 }
 
+
+
+
+// async function getProductviaSubcategory(req,res){
+//   try{
+//     const data = await SubCategory.findById('66d95899d827e97d93b3750d');
+//     const newData =data.name;
+    
+//     const AllDress = await Product.aggregate([
+//       {
+//         $match:{subCategory:newData}
+//       },
+//       {
+//         $group:{
+//          "_id":"$subCategory",
+//          "totalProduct":{$sum:1},
+//          "Product":{$push:"$$ROOT"}
+//       }}
+//     ])
+// if(AllDress){
+//          return res.status(200).send({
+//          success:true,
+//          message:"here  is your all Data",
+//          length:AllDress.length,
+//          AllDress,
+//         newData 
+//       })
+     
+//     }  
+
+//   }catch(error){
+//       return res.status(500).send({
+//       success:false,
+//       message:"error in getting the product",
+//       error:error.message
+//     })
+//   }
+  
+//   }
+async function getProductviaSubcategory(req, res) {
+  try {
+    const data = await SubCategory.findById('66d95899d827e97d93b3750d');
+    if (!data) {
+        return res.status(404).send({
+        success: false,
+        message: "Subcategory not found"
+      });
+    }
+//     const subcatId = data._id;
+//     const allDress = await Product.aggregate([
+//       {
+//         $match: { subCategory: subcatId } 
+//       },
+//       {
+//         $group: {
+//           _id: "$subCategory",
+//           totalProduct: { $sum: 1 },
+//           products: { $push: "$$ROOT" }
+//         }
+//       }
+//     ]);
+
+//     if (allDress) {
+//         return res.status(200).send({
+//         success: true,
+//         message: "Here is all your data",
+//         allDress
+//       });
+//     } else {
+//       return res.status(404).send({
+//         success: false,
+//         message: "No products found for this subcategory"
+//       });
+//     }
+
+//   } catch (error) {
+//     return res.status(500).send({
+//       success: false,
+//       message: "Error in getting the products",
+//       error: error.message
+//     });
+//   }   
+// const AllDress =await Product.find({subCategory:'66d95899d827e97d93b3750d'})
+
+   const nameData =await SubCategory.findOne({name:"Dress"});
+
+   const AllDress =await Product.find({subCategory:nameData._id})
+   return res.status(200).send({
+    success:true,
+    message:"here is your all Data",
+   length:AllDress.length,
+   AllDress
+  
+   })
+  }
+  
+  catch(error){
+    return res.status(400).send({
+      success:false,
+      message:"this error is very big ",
+      error:error.message
+    })
+  }
+
+}
 module.exports = {
   createProduct,
   getAllProduct,
@@ -370,4 +475,5 @@ module.exports = {
   getSingleProduct,
   updateProduct,
   deleteProduct,
+  getProductviaSubcategory
 };
