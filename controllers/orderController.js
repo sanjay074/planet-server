@@ -94,7 +94,8 @@ const createOrder = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Order placed successfully",
-      orderId: getorderId 
+      orderId: getorderId,
+      amount:totalPrice
     });
 
   } catch (error) {
