@@ -172,7 +172,7 @@ const oneItemOrderSummary = async (req,res)=>{
         message: error.details[0].message
       });
     }
-    const {productId,selectedSize} = req.body;
+    const {productId,selectedSize,quantity} = req.body;
     const productItem = await Product.findOne({_id:productId});
     if(!productItem){
       return res.status(400).json({
@@ -201,7 +201,7 @@ const oneItemOrderSummary = async (req,res)=>{
     return res.status(200).json({
       status:1,
       message:"Get data sucessfully",
-      productItem,orderSummary,selectedSize
+      productItem,orderSummary,selectedSize,quantity
     })
   }catch(error){
     return res.status(500).json({
@@ -240,6 +240,7 @@ const deleteFromCart = async (req, res) => {
     });
   }
 };
+
 const updateItemQuantity = async (req, res) => {
   try {
       // Validate request body
@@ -285,6 +286,10 @@ const updateItemQuantity = async (req, res) => {
       });
   }
 }
+
+
+
+
 const  deleteCartController =async(req,res)=>{
   try{
     //id from params

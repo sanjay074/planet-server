@@ -353,6 +353,7 @@ const paymentSchema = Joi.object({
 
   const oneOrderSummarySchema = Joi.object({
     productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
+    quantity: Joi.number().positive().required(),
     selectedSize: Joi.string().required().messages({
       "string.empty": "Item selectedSize  is required.",
       "any.required": "Item selectedSize is a mandatory field."
