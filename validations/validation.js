@@ -103,7 +103,7 @@ const productValidationSchema = Joi.object({
     "any.only": "Foot size must be one of 1,2,3,4,5,6,7,8,9,10,11,12",
     "any.required": "Foot size is required",
   }),
-  size: Joi.array().items(Joi.string().valid("XS", "S", "M", "L", "XL", "XXL")).messages({
+  size:Joi.array().items(Joi.string().valid("XS", "S", "M", "L", "XL", "XXL")).messages({
     "array.base": "Product sizes must be an array",
     "string.base": "Size must be a string",
     "any.only": "Size must be one of XS, S, M, L, XL, XXL",

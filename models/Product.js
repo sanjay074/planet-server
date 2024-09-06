@@ -84,7 +84,7 @@ const productSchema = mongoose.Schema(
         message: "At least one picture is required",
       },
     },
-    active: {
+    active:{
       type: Boolean,
       default: true,
     },

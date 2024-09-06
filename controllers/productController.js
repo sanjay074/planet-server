@@ -291,29 +291,86 @@ async function getSingleProduct(req, res) {
 
 async function updateProduct(req, res) {
   try {
+
+    const {
+           name,description,category,subCategory,brand,color,size,numSize,footSize,
+           quantity,stock,basePrice,finalPrice,active
+          } = req.body;
+
     const productId = req.params._id;
     if (!isValidObjectId(productId)) {
       return res
         .status(400)
         .json({ success: false, message: "Product ID is Invalid " });
     }
-    const updatedFields = req.body;
-
-    // Validate the updated fields
-    const { error, value } = productValidationSchema.validate(updatedFields, {
-      abortEarly: false,
-    });
-    if (error) {
-      return res
-        .status(400)
-        .json({ error: error.details.map((err) => err.message) });
-    }
-
+    
     // Check if product exists
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+
+   
+
+          //  if(!isValidObjectId(category) || !isValidObjectId(subCategory) ||!isValidObjectId(brand)){
+          //     return res.status(400).send({
+          //     success:false,
+          //     message:"Category or subcategory or brand id is not avail"
+          //   })
+          //  }
+
+
+          //  const discountPrice =(((finalPrice-basePrice)/finalPrice)*100).toFixed();
+        
+
+
+           const categoryAvail = await Category.findById(category);
+           if(!categoryAvail){
+            return res.status(400).send({
+              success:true,
+              message:"This category is not available"
+            })
+          }
+          const CategoryName =categoryAvail.name.toLowerCase();
+
+          if(CategoryName == "shoes"){
+           if(!footSize){
+            return res.status(400).send({success:false,message:"please fill the footsize"})
+           }
+           if(numSize || size){
+            return res.status(400).send({success:false,message:"please empty the size or numSize"})
+           }
+          }
+
+          else{
+            const SubCatAvail = await SubCategory.findById(subCategory);
+            
+             let  SubCatName =SubCatAvail.name.toLowerCase();
+          
+              if(!SubCatName){
+                   return res.status(400).send({success:false,message:"this SubCategory not avialable"})
+            }
+            const clothCategory =["shirt","tshirt","jeans","dress"].includes(SubCatName);
+
+            if(clothCategory){
+              if(!numSize || !size){
+                  return res.status(400).send({
+                  success:false,
+                  message:"please fill the numSize and size"
+                })
+              }
+              if(footSize){
+                  return res.status(400).send({
+                  success:false,
+                  message:"please empty footsize"
+                })
+              }
+            }
+          }
+       if(finalPrice || basePrice){
+          const discount = basePrice - finalPrice;
+          var discountPrice = ((discount / basePrice) * 100).toFixed();
+       }
 
     // Handle image updates
     let updatedImages = [];
@@ -333,7 +390,11 @@ async function updateProduct(req, res) {
     // Update product fields
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
-      { ...value, images: updatedImages },
+      {
+        name,description,category,subCategory,brand,color,size,numSize,footSize,
+        quantity,stock,discountPrice,
+        basePrice,finalPrice,active,
+        images: updatedImages },
       { new: true }
     );
 
@@ -346,6 +407,8 @@ async function updateProduct(req, res) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
+
 async function getAllProduct(req,res){
   try{
     const getAllData =await Product.find({})
@@ -362,9 +425,6 @@ async function getAllProduct(req,res){
       });
   }
 }
-
-
-
 
 // async function getProductviaSubcategory(req,res){
 //   try{
@@ -404,13 +464,14 @@ async function getAllProduct(req,res){
 //   }
 async function getProductviaSubcategory(req, res) {
   try {
-    const data = await SubCategory.findById('66d95899d827e97d93b3750d');
-    if (!data) {
-        return res.status(404).send({
-        success: false,
-        message: "Subcategory not found"
-      });
-    }
+  
+    // const data = await SubCategory.findById('66d95899d827e97d93b3750d');
+    // if (!data) {
+    //     return res.status(404).send({
+    //     success: false,
+    //     message: "Subcategory not found"
+    //   });
+    // }
 //     const subcatId = data._id;
 //     const allDress = await Product.aggregate([
 //       {
@@ -447,7 +508,7 @@ async function getProductviaSubcategory(req, res) {
 //   }   
 // const AllDress =await Product.find({subCategory:'66d95899d827e97d93b3750d'})
 
-   const nameData =await SubCategory.findOne({name:"Dress"});
+   const nameData =await SubCategory.findOne({name :"Dress"});
 
    const AllDress =await Product.find({subCategory:nameData._id})
    return res.status(200).send({
@@ -462,12 +523,65 @@ async function getProductviaSubcategory(req, res) {
   catch(error){
     return res.status(400).send({
       success:false,
-      message:"this error is very big ",
+      message:"error in getting the dress data",
       error:error.message
     })
   }
-
 }
+
+async function getMensNewArrival(req,res){
+  try{
+   const CategoryName = await Category.findOne({name:'Male'});
+   if(CategoryName){
+   const  Mensdata = await Product.find({category:CategoryName._id}).sort({createdAt:-1})
+    return res.status(200).send({
+       success:true,
+       message:"here is your all data",
+      //  CategoryName
+      total:Mensdata.length,
+      Mensdata
+   })
+  }
+  }catch(error){
+    return res.status(500).send({
+    success:false,
+    message:"error in getting the mens Arrival data",
+    error:error.message
+   })
+  }
+}
+
+async function getWomenNewArrival(req,res){
+  try{
+    const CategoryName = await Category.findOne({name:'Female'});
+    const NewArrival =await Product.find({category:CategoryName._id}).sort({createdAt:-1}).lean().exec()
+
+
+    return res.status(200).send({
+      success:true,
+      message:"here is your data",
+      total:NewArrival.length,
+      NewArrival
+    
+    })
+
+
+  }catch(error){
+    return res.status(400).send({
+      success:false,
+      message:"error in getting the women data",
+      error:error.message
+    })
+
+  }
+}
+
+
+
+
+
+
+
 module.exports = {
   createProduct,
   getAllProduct,
@@ -475,5 +589,7 @@ module.exports = {
   getSingleProduct,
   updateProduct,
   deleteProduct,
-  getProductviaSubcategory
+  getProductviaSubcategory,
+  getMensNewArrival,
+  getWomenNewArrival  
 };
