@@ -275,13 +275,16 @@ const JoiOrderSchema = Joi.object({
       Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
           quantity: Joi.number().integer().positive().required(),
-          size:Joi.string().required().messages({
-              "string.empty": "Item size  is required.",
+          size: Joi.string().required().messages({
+              "string.empty": "Item size is required.",
               "any.required": "Item size is a mandatory field."
           })
       })
-  ).required()
+  ).min(1).required().messages({
+      "array.min": "At least one product must be added to the order."
+  })
 });
+
 
 // Validation schema for creating a rating and review
 const createRatingSchema = Joi.object({
