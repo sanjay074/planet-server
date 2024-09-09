@@ -103,16 +103,16 @@ const productValidationSchema = Joi.object({
     "any.only": "Foot size must be one of 1,2,3,4,5,6,7,8,9,10,11,12",
     "any.required": "Foot size is required",
   }),
-  size: Joi.array().items(Joi.string().valid("XS", "S", "M", "L", "XL", "XXL")).messages({
+  size:Joi.array().items(Joi.string().valid("XS", "S", "M", "L", "XL", "XXL")).messages({
     "array.base": "Product sizes must be an array",
     "string.base": "Size must be a string",
     "any.only": "Size must be one of XS, S, M, L, XL, XXL",
     "any.required": "Size is required",
   }),
-  numSize:Joi.array().items(Joi.string().valid("28", "30", "32", "34", "36", "38", "40", "42", "44")).messages({
+  numSize:Joi.array().items(Joi.string().valid("24","26","28","30","32","34","36","38","40","42","44","46","48")).messages({
     "array.base": "Foot sizes must be an array",
     "string.base": "Foot size must be a string",
-    "any.only": "Foot size must be one of 28,30...........40 ",
+    "any.only": "Foot size must be one of 24,30...........48",
     "any.required": "Foot size is required",
   }),
 
@@ -275,13 +275,16 @@ const JoiOrderSchema = Joi.object({
       Joi.object({
           productId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
           quantity: Joi.number().integer().positive().required(),
-          size:Joi.string().required().messages({
-              "string.empty": "Item size  is required.",
+          size: Joi.string().required().messages({
+              "string.empty": "Item size is required.",
               "any.required": "Item size is a mandatory field."
           })
       })
-  ).required()
+  ).min(1).required().messages({
+      "array.min": "At least one product must be added to the order."
+  })
 });
+
 
 // Validation schema for creating a rating and review
 const createRatingSchema = Joi.object({
