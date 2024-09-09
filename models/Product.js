@@ -38,7 +38,7 @@ const productSchema = mongoose.Schema(
     },
     numSize:{
       type:[String],
-      enum:["28","30","32","34","36","38","40","42"]
+      enum:["24","26","28","30","32","34","36","38","40","42","44","46","48"]
     },
     footSize:{
       type:[String],
@@ -84,7 +84,7 @@ const productSchema = mongoose.Schema(
         message: "At least one picture is required",
       },
     },
-    active: {
+    active:{
       type: Boolean,
       default: true,
     },

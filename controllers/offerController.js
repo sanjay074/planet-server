@@ -79,6 +79,7 @@ const getalloffer = async(req,res)=>{
 const offerTypeGroup =async(req,res)=>{
     try{
       const offerType = req.params.offer;
+     
       const allOffers = await offer.aggregate([
          {
             $match:{offerType}
@@ -91,13 +92,21 @@ const offerTypeGroup =async(req,res)=>{
             }
          }
       ])
-      return res.status(200).send({
-        success:true,
-        message:"here is your all data",
-        allOffers
-      })
- 
-
+      if(allOffers){
+        return res.status(200).send({
+            success:true,
+            message:"here is your all data",
+            allOffers
+          })
+          
+        }
+        else{
+          return res.status(400).send({
+          success:false,
+          message:"no offer avail on this type"
+        })
+       
+     }
 
 
     }catch(error){
@@ -207,6 +216,7 @@ const updateOffer = async (req, res) => {
         const updatedFields = {
             name: req.body.name,
             offerPrice: req.body.offerPrice,
+            offerType:req.body.offerType
         };
 
         // Handle file upload if a new file is provided
