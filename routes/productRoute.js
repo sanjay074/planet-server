@@ -21,7 +21,7 @@ productRouter.get("/getAll", getAllProduct);
 productRouter.get("/dress",getProductviaSubcategory);
 productRouter.get("/mensArrival",getMensNewArrival);
 productRouter.get("/womenArrival",getWomenNewArrival);
-productRouter.get("/getWomenNewArrival", getProduct);
+productRouter.get("/", getProduct);
 productRouter.get("/:_id", getSingleProduct);
 productRouter.put("/:_id",authMiddleware,isAdminMd,uploadProduct.array("images"), updateProduct);
 productRouter.delete("/:_id",authMiddleware,isAdminMd ,uploadProduct.array("images"), deleteProduct);

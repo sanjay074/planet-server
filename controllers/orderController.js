@@ -141,14 +141,16 @@ const getAllOrder = async (req, res) => {
 const getmyOrder = async (req, res) => {
   try {
     const userId = req.userId;
+    console.log("userid ",userId);
     const orders = await Order.find({ userId })
       .populate('orderItems.productId')
       .populate({
         path: 'orderItems.productId',
         select: "name color brand size -_id"
       });
+     
 
-    if (!orders.length == 0) {
+    if (orders.length == 0) {
       return res.status(400).send({
         success: false,
         message: "No orders found for the user"
@@ -341,7 +343,9 @@ const getUserSingleOrder =async(req,res)=>{
   })
 }
 }
-module.exports = { createOrder,
-   getAllOrder, getmyOrder, updateOrder,newOrder,
+module.exports = {
+    createOrder,
+    getAllOrder,
+    getmyOrder, updateOrder,newOrder,
    getRecentOrder,deleteSingleOrder,getUserSingleOrder
   };

@@ -411,8 +411,8 @@ async function updateProduct(req, res) {
 
 async function getAllProduct(req,res){
   try{
-    const getAllData =await Product.find({})
-    return res.status(200).send({
+     const getAllData =await Product.find({}).populate('category','name -_id')
+      return res.status(200).send({
       success:true,
       message:"here is your all data",
       data:getAllData.length,
