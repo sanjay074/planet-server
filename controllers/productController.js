@@ -125,7 +125,7 @@ async function getProduct(req, res) {
       sortBy,
       sortOrder = "asc",
       page = 1,
-      limit = 10,
+      limit = 50,
       minPrice,
       maxPrice,
     } = req.query;
