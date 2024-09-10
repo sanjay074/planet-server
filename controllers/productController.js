@@ -56,7 +56,7 @@ const createProduct = async (req, res) => {
       }
 
       const subCategoryName = subCategoryData.name.toLowerCase();
-      const isClothingCategory = ["shirt", "tshirt", "jeans","dress"].includes(subCategoryName);
+      const isClothingCategory = ["shirt", "tshirt", "jeans","suits","dress"].includes(subCategoryName);
 
       if (isClothingCategory) {
         if (!size && !numSize) {
