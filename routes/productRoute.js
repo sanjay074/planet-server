@@ -12,6 +12,7 @@ const {
   getProductviaSubcategory,
   getMensNewArrival,
   getWomenNewArrival,
+  similarProducts
 } = require("../controllers/productController");
 const { uploadProduct } = require("../middleware/fileUpload");
 const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
@@ -23,6 +24,7 @@ productRouter.get("/mensArrival",getMensNewArrival);
 productRouter.get("/womenArrival",getWomenNewArrival);
 productRouter.get("/", getProduct);
 productRouter.get("/:_id", getSingleProduct);
+productRouter.get("/similar/:_id",similarProducts);
 productRouter.put("/:_id",authMiddleware,isAdminMd,uploadProduct.array("images"), updateProduct);
 productRouter.delete("/:_id",authMiddleware,isAdminMd ,uploadProduct.array("images"), deleteProduct);
 

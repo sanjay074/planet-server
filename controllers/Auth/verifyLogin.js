@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { otpValidationSchema } = require("../../validations/validation");
 
 exports.verifyOTP = async (req, res) => {
-  // Validate request data
+  //Validate request data
   const { error } = otpValidationSchema.validate(req.body);
   if (error) {
     return res.status(400).send({ message: error.details[0].message });
@@ -31,7 +31,7 @@ exports.verifyOTP = async (req, res) => {
         try {
           const result = await createParent.save();
           const _id = result._id.toString();
-          const token = jwt.sign({ id: _id }, process.env.JWT_SECRET, {
+          const token = jwt.sign({ id: _id }, process.env.JWT_SECRET,{
             expiresIn: "30d",
           });
           return res.status(200).send({
@@ -39,7 +39,7 @@ exports.verifyOTP = async (req, res) => {
             token: token,
           });
         } catch (e) {
-          console.log(e);
+  
           return res.status(500).send({ message: "Something bad happened" });
         }
       }
@@ -93,6 +93,7 @@ exports.verifyOTP = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
 
 
 // exports.verifyOTP = async (req, res) => {

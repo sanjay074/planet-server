@@ -211,8 +211,8 @@ const updateOrder = async (req, res) => {
     });
   }
 };
-//new order controller 
 
+//new order controller 
 const newOrder = async(req,res)=>{
   try{
     const recentOrder = await Order.find({}).populate({
@@ -283,6 +283,7 @@ const  getRecentOrder = async(req,res)=>{
     })
   }
 }
+
 const deleteSingleOrder =async(req,res)=>{
   try{
     const id =req.params._id;
@@ -343,6 +344,7 @@ const getUserSingleOrder =async(req,res)=>{
   })
 }
 }
+
 module.exports = {
     createOrder,
     getAllOrder,
