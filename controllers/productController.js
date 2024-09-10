@@ -56,7 +56,7 @@ const createProduct = async (req, res) => {
       }
 
       const subCategoryName = subCategoryData.name.toLowerCase();
-      const isClothingCategory = ["shirt", "tshirt", "jeans","dress"].includes(subCategoryName);
+      const isClothingCategory = ["shirt", "tshirt", "jeans","suits","dress"].includes(subCategoryName);
 
       if (isClothingCategory) {
         if (!size && !numSize) {
@@ -125,7 +125,7 @@ async function getProduct(req, res) {
       sortBy,
       sortOrder = "asc",
       page = 1,
-      limit = 10,
+      limit = 50,
       minPrice,
       maxPrice,
     } = req.query;
