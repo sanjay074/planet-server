@@ -380,7 +380,10 @@ const passwordSchema = Joi.string()
       "string.email": "Please provide a valid email address",
       "any.required": "Email is required",
     }),
-    password: passwordSchema,
+    password: Joi.string().required().messages({
+      "string.empty": "Password is required",
+      'any.required': 'Password is required.'
+    })
   })
 
 const userValidationSchema = Joi.object({
