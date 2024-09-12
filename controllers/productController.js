@@ -112,6 +112,37 @@ const createProduct = async (req, res) => {
 
 
 
+const similarProducts = async (req,res)=>{
+  try {
+    const productId = req.params._id;
+    if (!isValidObjectId(productId)) {
+      return res.status(400).json({
+        success: 0,
+        message:
+          "Invalid product ID format. Please provide a valid MongoDB ObjectId.",
+      });
+    }
+    const product = await Product.findById(productId).populate([
+      "category",
+      "subCategory",
+      "brand"
+    ]);
+
+    if (!product) {
+      return res.status(400).json({status:0,message: "Product not found" });
+    }
+    const similarProducts = await Product.find({
+      category: product.category._id,
+      subCategory: product.subCategory._id,
+      brand: product.brand._id,
+      _id: { $ne: product._id }, 
+    }).limit(10); 
+
+    return res.json({status:1, message:"Get Similar Products by ID ",similarProducts });
+  } catch (error) {
+   return res.status(500).json({ message: error.message.toString() });
+  }
+} 
 
 
 
@@ -634,5 +665,6 @@ module.exports = {
   getProductviaSubcategory,
   getMensNewArrival,
   getWomenNewArrival,
-  getoutofStock
+  getoutofStock,
+  similarProducts
 };

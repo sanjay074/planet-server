@@ -13,6 +13,7 @@ const {
   getMensNewArrival,
   getWomenNewArrival,
   getoutofStock,
+  similarProducts
 
 } = require("../controllers/productController");
 const { uploadProduct } = require("../middleware/fileUpload");
@@ -26,6 +27,7 @@ productRouter.get("/womenArrival",getWomenNewArrival);
 productRouter.get("/", getProduct);
 productRouter.get("/getoutOfStock/:id",authMiddleware,isAdminMd,getoutofStock);
 productRouter.get("/:_id", getSingleProduct);
+productRouter.get("/similar/:_id",similarProducts);
 productRouter.put("/:_id",authMiddleware,isAdminMd,uploadProduct.array("images"), updateProduct);
 productRouter.delete("/:_id",authMiddleware,isAdminMd ,uploadProduct.array("images"), deleteProduct);
 module.exports = productRouter;
