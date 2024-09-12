@@ -108,10 +108,6 @@ const createProduct = async (req, res) => {
   }
 };
 
-
-
-
-
 const similarProducts = async (req,res)=>{
   try {
     const productId = req.params._id;
@@ -129,7 +125,7 @@ const similarProducts = async (req,res)=>{
     ]);
 
     if (!product) {
-      return res.status(400).json({status:0,message: "Product not found" });
+      return res.status(400).json({status:0,message: "Product not found"});
     }
     const similarProducts = await Product.find({
       category: product.category._id,
@@ -493,6 +489,7 @@ async function getAllProduct(req,res){
 //   }
   
 //   }
+
 async function getProductviaSubcategory(req, res) {
   try {
   
