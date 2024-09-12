@@ -270,6 +270,7 @@ const updateItemSchema = Joi.object({
 
 // Validation schema for creating an order
 const JoiOrderSchema = Joi.object({
+  paymentMethod:Joi.string(),
   addressId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required(),
   products: Joi.array().items(
       Joi.object({
