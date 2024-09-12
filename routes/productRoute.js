@@ -12,6 +12,8 @@ const {
   getProductviaSubcategory,
   getMensNewArrival,
   getWomenNewArrival,
+  getoutofStock,
+
 } = require("../controllers/productController");
 const { uploadProduct } = require("../middleware/fileUpload");
 const { authMiddleware, isAdminMd } = require("../middleware/authMiddle");
@@ -22,9 +24,8 @@ productRouter.get("/dress",getProductviaSubcategory);
 productRouter.get("/mensArrival",getMensNewArrival);
 productRouter.get("/womenArrival",getWomenNewArrival);
 productRouter.get("/", getProduct);
+productRouter.get("/getoutOfStock/:id",authMiddleware,isAdminMd,getoutofStock);
 productRouter.get("/:_id", getSingleProduct);
 productRouter.put("/:_id",authMiddleware,isAdminMd,uploadProduct.array("images"), updateProduct);
 productRouter.delete("/:_id",authMiddleware,isAdminMd ,uploadProduct.array("images"), deleteProduct);
-
-
 module.exports = productRouter;
