@@ -1,3 +1,4 @@
+const { types } = require("joi");
 const  mongoose  = require("mongoose");
 const orderSchema =  mongoose.Schema({
     userId:{
@@ -36,6 +37,7 @@ const orderSchema =  mongoose.Schema({
         type:String,
         required:true
     },
+
     paymentMethod:{
         types:String,
         enum:["cod","online"],
@@ -51,7 +53,7 @@ const orderSchema =  mongoose.Schema({
         enum:["Processed","shipped","inRoute","Confirmed",
                "Arrival","delivered","Returned",
                "cancelled","outofStock"],
-        default:"Processed"
+        default:"Confirmed"
     }
     
 },{timestamps:true})

@@ -364,6 +364,58 @@ const paymentSchema = Joi.object({
     })
 });
 
+const passwordSchema = Joi.string()
+  .min(8)
+  .max(30)
+  .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,30}$'))
+  .required()
+  .messages({
+    'string.pattern.base': 'Password must be between 8-30 characters long, include at least one    uppercase letter, one lowercase letter, one number, and one special character.',
+    'string.min': 'Password must be at least 8 characters long.',
+    'string.max': 'Password must not exceed 30 characters.',
+    'any.required': 'Password is required.'
+  })
+
+  const UserLoginSchema = Joi.object({
+    email: Joi.string().email().required().messages({
+      "string.email": "Please provide a valid email address",
+      "any.required": "Email is required",
+    }),
+    password: Joi.string().required().messages({
+      "string.empty": "Password is required",
+      'any.required': 'Password is required.'
+    })
+  })
+
+const userValidationSchema = Joi.object({
+  firstName: Joi.string().min(2).max(30).required().messages({
+    "string.base": "First name should be a type of text",
+    "string.empty": "First name is required",
+    "string.min": "First name should have at least 2 characters",
+    "string.max": "First name should have at most 30 characters",
+    "any.required": "First name is required",
+  }),
+  lastName: Joi.string().min(2).max(30).required().messages({
+    "string.base": "Last name should be a type of text",
+    "string.empty": "Last name is required",
+    "string.min": "Last name should have at least 2 characters",
+    "string.max": "Last name should have at most 30 characters",
+    "any.required": "Last name is required",
+  }),
+  email: Joi.string().email().required().messages({
+    "string.email": "Please provide a valid email address",
+    "any.required": "Email is required",
+  }),
+  password:passwordSchema,
+  confirmPassword:Joi.string()
+});
+
+
+
+
+
+
+
 module.exports = {
   categoryValidationSchema,
   subCategoryValidationSchema,
@@ -385,5 +437,7 @@ module.exports = {
   paymentSchema,
   updateItemSchema,
   offerValidationSchema,
-  oneOrderSummarySchema
+  oneOrderSummarySchema,
+  userValidationSchema,
+  UserLoginSchema
 };
