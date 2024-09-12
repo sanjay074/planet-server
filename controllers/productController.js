@@ -595,16 +595,58 @@ async function getWomenNewArrival(req,res){
       NewArrival
     
     })
-
-
   }catch(error){
     return res.status(400).send({
       success:false,
       message:"error in getting the women data",
       error:error.message
     })
-
   }
+}
+
+// async function updatenewProduct(req,res){
+//   try{
+//     const response =await Product.updateMany({quantity:0},{ $set :{stock:false}})
+     
+//     if(response){
+//        var data =await Product.find({stock:false}) 
+//       return res.status(200).send({
+//         success:true,
+//         message:"here is your data",
+//         total:data.length,
+//         data
+//       })
+//     }
+//   }catch(error){
+//     return res.status(400).send({
+//       success:false,
+//       messag:"error in updating the product",
+//       error:error.message
+
+//     })
+//   }
+// }
+
+async function getoutofStock(req,res){
+   try{
+    const id =req.params.id;
+
+    const data =await Product.find({stock:id});
+    if(data){
+      return res.status(200).send({
+        success:true,
+        message:"Here is your all data",
+        total:data.length,
+        data
+      })
+    }
+   }catch(error){
+    return res.status(500).send({
+      success:false,
+      message:"error in getting the product",
+      error:error.message,
+    })
+   }
 }
 
 
@@ -622,6 +664,7 @@ module.exports = {
   deleteProduct,
   getProductviaSubcategory,
   getMensNewArrival,
-  getWomenNewArrival ,
+  getWomenNewArrival,
+  getoutofStock,
   similarProducts
 };
