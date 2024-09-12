@@ -339,21 +339,7 @@ async function updateProduct(req, res) {
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
-    }
-
-   
-
-          //  if(!isValidObjectId(category) || !isValidObjectId(subCategory) ||!isValidObjectId(brand)){
-          //     return res.status(400).send({
-          //     success:false,
-          //     message:"Category or subcategory or brand id is not avail"
-          //   })
-          //  }
-
-
-          //  const discountPrice =(((finalPrice-basePrice)/finalPrice)*100).toFixed();
-        
-
+    }      
 
            const categoryAvail = await Category.findById(category);
            if(!categoryAvail){
@@ -384,10 +370,10 @@ async function updateProduct(req, res) {
             const clothCategory =["shirt","tshirt","jeans","dress"].includes(SubCatName);
 
             if(clothCategory){
-              if(!numSize || !size){
+              if(!numSize && !size){
                   return res.status(400).send({
                   success:false,
-                  message:"please fill the numSize and size"
+                  message:"please fill the numSize or size"
                 })
               }
               if(footSize){
@@ -665,6 +651,6 @@ module.exports = {
   getProductviaSubcategory,
   getMensNewArrival,
   getWomenNewArrival,
-  getoutofStock,
-  similarProducts
+   similarProducts,
+  getoutofStock
 };
