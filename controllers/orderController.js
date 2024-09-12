@@ -84,8 +84,8 @@ const createOrder = async (req, res) => {
     await order.save();
 
     // Update the product quantities
-    for (const item of orderItems) {
-      await Product.findByIdAndUpdate(item.productId, {
+    for (const item of orderItems) { 
+       await Product.findByIdAndUpdate(item.productId, {
         $inc: { quantity: -item.quantity }
       });
     }
@@ -97,9 +97,8 @@ const createOrder = async (req, res) => {
       orderId: getorderId,
       amount:totalPrice
     });
-
   } catch (error) {
-    return res.status(500).json({
+      return res.status(500).json({
       success: false,
       message: "Error in creating the order",
       error: error.message
@@ -141,12 +140,12 @@ const getAllOrder = async (req, res) => {
 const getmyOrder = async (req, res) => {
   try {
     const userId = req.userId;
-    console.log("userid ",userId);
+  //  console.log("userid ",userId);
     const orders = await Order.find({ userId })
       .populate('orderItems.productId')
       .populate({
         path: 'orderItems.productId',
-        select: "name color brand size -_id"
+        select: "name color brand  images -_id"
       });
      
 
@@ -190,6 +189,18 @@ const updateOrder = async (req, res) => {
     }
 
     const data = await Order.findByIdAndUpdate(id, { status }, { new: true });
+    //update the out of stock
+    const myData=data.status;                  
+    if(myData === "delivered"){  
+       var abc = data.orderItems.map((id)=> id.productId.toString());
+       var updateOrder = await Product.find({_id:{$in:abc}})
+       var myUpdatedData=await  Product.updateMany({_id:{$in:abc},quantity:0},{$set:{stock:false}})
+     
+       return res.status(200).send({
+        success: true,
+        message: "Order updated successfully  also update your stock",
+       })  
+      }
 
     if (!data) {
       return res.status(400).send({
@@ -201,7 +212,10 @@ const updateOrder = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "Order updated successfully",
-      data
+      
+    
+
+  
     });
   } catch (error) {
     return res.status(400).send({
@@ -211,8 +225,8 @@ const updateOrder = async (req, res) => {
     });
   }
 };
-//new order controller 
 
+//new order controller 
 const newOrder = async(req,res)=>{
   try{
     const recentOrder = await Order.find({}).populate({
@@ -283,6 +297,7 @@ const  getRecentOrder = async(req,res)=>{
     })
   }
 }
+
 const deleteSingleOrder =async(req,res)=>{
   try{
     const id =req.params._id;
@@ -343,9 +358,14 @@ const getUserSingleOrder =async(req,res)=>{
   })
 }
 }
+
 module.exports = {
     createOrder,
     getAllOrder,
-    getmyOrder, updateOrder,newOrder,
-   getRecentOrder,deleteSingleOrder,getUserSingleOrder
+    getmyOrder, 
+    updateOrder,
+    newOrder,
+   getRecentOrder,
+   deleteSingleOrder,
+   getUserSingleOrder
   };

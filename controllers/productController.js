@@ -56,7 +56,7 @@ const createProduct = async (req, res) => {
       }
 
       const subCategoryName = subCategoryData.name.toLowerCase();
-      const isClothingCategory = ["shirt", "tshirt", "jeans","dress"].includes(subCategoryName);
+      const isClothingCategory = ["shirt", "tshirt", "jeans","suits","dress"].includes(subCategoryName);
 
       if (isClothingCategory) {
         if (!size && !numSize) {
@@ -108,10 +108,37 @@ const createProduct = async (req, res) => {
   }
 };
 
+const similarProducts = async (req,res)=>{
+  try {
+    const productId = req.params._id;
+    if (!isValidObjectId(productId)) {
+      return res.status(400).json({
+        success: 0,
+        message:
+          "Invalid product ID format. Please provide a valid MongoDB ObjectId.",
+      });
+    }
+    const product = await Product.findById(productId).populate([
+      "category",
+      "subCategory",
+      "brand"
+    ]);
 
+    if (!product) {
+      return res.status(400).json({status:0,message: "Product not found"});
+    }
+    const similarProducts = await Product.find({
+      category: product.category._id,
+      subCategory: product.subCategory._id,
+      brand: product.brand._id,
+      _id: { $ne: product._id }, 
+    }).limit(10); 
 
-
-
+    return res.json({status:1, message:"Get Similar Products by ID ",similarProducts });
+  } catch (error) {
+   return res.status(500).json({ message: error.message.toString() });
+  }
+} 
 
 
 
@@ -125,7 +152,7 @@ async function getProduct(req, res) {
       sortBy,
       sortOrder = "asc",
       page = 1,
-      limit = 10,
+      limit = 50,
       minPrice,
       maxPrice,
     } = req.query;
@@ -462,6 +489,7 @@ async function getAllProduct(req,res){
 //   }
   
 //   }
+
 async function getProductviaSubcategory(req, res) {
   try {
   
@@ -564,16 +592,58 @@ async function getWomenNewArrival(req,res){
       NewArrival
     
     })
-
-
   }catch(error){
     return res.status(400).send({
       success:false,
       message:"error in getting the women data",
       error:error.message
     })
-
   }
+}
+
+// async function updatenewProduct(req,res){
+//   try{
+//     const response =await Product.updateMany({quantity:0},{ $set :{stock:false}})
+     
+//     if(response){
+//        var data =await Product.find({stock:false}) 
+//       return res.status(200).send({
+//         success:true,
+//         message:"here is your data",
+//         total:data.length,
+//         data
+//       })
+//     }
+//   }catch(error){
+//     return res.status(400).send({
+//       success:false,
+//       messag:"error in updating the product",
+//       error:error.message
+
+//     })
+//   }
+// }
+
+async function getoutofStock(req,res){
+   try{
+    const id =req.params.id;
+
+    const data =await Product.find({stock:id});
+    if(data){
+      return res.status(200).send({
+        success:true,
+        message:"Here is your all data",
+        total:data.length,
+        data
+      })
+    }
+   }catch(error){
+    return res.status(500).send({
+      success:false,
+      message:"error in getting the product",
+      error:error.message,
+    })
+   }
 }
 
 
@@ -591,5 +661,7 @@ module.exports = {
   deleteProduct,
   getProductviaSubcategory,
   getMensNewArrival,
-  getWomenNewArrival  
+  getWomenNewArrival,
+  getoutofStock,
+  similarProducts
 };
