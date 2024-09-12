@@ -316,6 +316,7 @@ async function getSingleProduct(req, res) {
   }
 }
 
+
 async function updateProduct(req, res) {
   try {
 
@@ -645,10 +646,6 @@ async function getoutofStock(req,res){
     })
    }
 }
-
-
-
-
 
 
 
