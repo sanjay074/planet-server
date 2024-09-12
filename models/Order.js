@@ -37,7 +37,12 @@ const orderSchema =  mongoose.Schema({
         type:String,
         required:true
     },
-   
+
+    // paymentMethod:{
+    //     types:String,
+    //     enum:["cod","online"],
+    //     default:"cod"
+    // },
     paymentStatus: { 
         type: String, 
         enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
@@ -50,6 +55,7 @@ const orderSchema =  mongoose.Schema({
                "cancelled","outofStock"],
         default:"Confirmed"
     }
+    
 },{timestamps:true})
 
 module.exports = mongoose.model("Order",orderSchema) 

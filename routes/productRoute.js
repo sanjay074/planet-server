@@ -3,7 +3,6 @@ const productRouter = express.Router();
 
 const {
   createProduct,
-  // getAllProduct,
   getProduct,
   getSingleProduct,
   updateProduct,
@@ -12,8 +11,8 @@ const {
   getProductviaSubcategory,
   getMensNewArrival,
   getWomenNewArrival,
-  getoutofStock,
-  similarProducts
+  similarProducts,
+  getoutofStock
 
 } = require("../controllers/productController");
 const { uploadProduct } = require("../middleware/fileUpload");
@@ -25,7 +24,7 @@ productRouter.get("/dress",getProductviaSubcategory);
 productRouter.get("/mensArrival",getMensNewArrival);
 productRouter.get("/womenArrival",getWomenNewArrival);
 productRouter.get("/", getProduct);
-productRouter.get("/getoutOfStock/:id",authMiddleware,isAdminMd,getoutofStock);
+productRouter.get("/getOutOfStock/:id",authMiddleware,isAdminMd,getoutofStock)
 productRouter.get("/:_id", getSingleProduct);
 productRouter.get("/similar/:_id",similarProducts);
 productRouter.put("/:_id",authMiddleware,isAdminMd,uploadProduct.array("images"), updateProduct);

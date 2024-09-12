@@ -195,10 +195,10 @@ const updateOrder = async (req, res) => {
        var abc = data.orderItems.map((id)=> id.productId.toString());
        var updateOrder = await Product.find({_id:{$in:abc}})
        var myUpdatedData=await  Product.updateMany({_id:{$in:abc},quantity:0},{$set:{stock:false}})
-     
        return res.status(200).send({
         success: true,
         message: "Order updated successfully  also update your stock",
+        updateOrder
        })  
       }
 
@@ -211,11 +211,7 @@ const updateOrder = async (req, res) => {
 
     return res.status(200).send({
       success: true,
-      message: "Order updated successfully",
-      
-    
-
-  
+      message: "Order updated successfully"
     });
   } catch (error) {
     return res.status(400).send({
