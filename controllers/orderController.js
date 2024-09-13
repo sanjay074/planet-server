@@ -13,7 +13,6 @@ const generateOrderId = () => {
 
 const createOrder = async (req, res) => {
   try {
-
     const { error } = JoiOrderSchema.validate(req.body);
     if (error) {
       return res.status(400).send({
@@ -94,7 +93,7 @@ const createOrder = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Order placed successfully",
-      orderId: getorderId,
+      orderId:getorderId,
       amount:totalPrice
     });
   } catch (error) {
@@ -190,15 +189,19 @@ const updateOrder = async (req, res) => {
 
     const data = await Order.findByIdAndUpdate(id, { status }, { new: true });
     //update the out of stock
-    const myData=data.status;                  
-    if(myData === "delivered"){  
-       var abc = data.orderItems.map((id)=> id.productId.toString());
-       var updateOrder = await Product.find({_id:{$in:abc}})
-       var myUpdatedData=await  Product.updateMany({_id:{$in:abc},quantity:0},{$set:{stock:false}})
-     
+    const payMethod =data.paymentMethod;
+    const myData=data.status;          
+            
+    if(payMethod === "cod" && myData === "delivered"){  
+       const abc = data.orderItems.map((id)=> id.productId.toString());
+       const updateOrder = await Product.find({_id:{$in:abc}});
+       const paymentStatus =await Order.findByIdAndUpdate(id,{paymentStatus:'Completed'},{new:true});
+       const myUpdatedData=await  Product.updateMany({_id:{$in:abc},quantity:0},{$set:{stock:false}});
+
        return res.status(200).send({
         success: true,
         message: "Order updated successfully  also update your stock",
+        paymentStatus
        })  
       }
 
@@ -212,10 +215,8 @@ const updateOrder = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "Order updated successfully",
-      
-    
-
-  
+      payMethod,
+      myData
     });
   } catch (error) {
     return res.status(400).send({
