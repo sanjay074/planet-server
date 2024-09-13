@@ -11,7 +11,7 @@ const  registrationUser = async (req, res) => {
          
      }
     if (password !== confirmPassword) {
-        return res.status(400).json({ success: 0, message: "Passwords do not match!" });
+        return res.status(400).json({ success: 0, message: "Passwords do not match!"});
       }
      const exist = await users.exists({ email: req.body.email });
      if (exist) {
@@ -28,7 +28,7 @@ const  registrationUser = async (req, res) => {
      res.status(200).json({success:1, message:"User registration is sucessfully"});
  
     }catch(error){
- 
+
      return res.status(500).json({
          status: 0,
          message: error.toString(),
@@ -74,8 +74,6 @@ const  UserLogin = async (req, res) => {
 async function getAllUserController(req,res){
  try{
     const alluser =await users.find({})
-    
-
     return res.status(200).send({
         success:true,
         message:"here is my all users",

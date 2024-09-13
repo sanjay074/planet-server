@@ -13,7 +13,6 @@ const generateOrderId = () => {
 
 const createOrder = async (req, res) => {
   try {
-
     const { error } = JoiOrderSchema.validate(req.body);
     if (error) {
       return res.status(400).send({
