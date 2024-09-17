@@ -322,7 +322,7 @@ async function updateProduct(req, res) {
 
     const {
            name,description,category,subCategory,brand,color,size,numSize,footSize,
-           quantity,stock,basePrice,finalPrice,active
+           quantity,stock,basePrice,finalPrice,active,productDetails
           } = req.body;
 
     const productId = req.params._id;
@@ -407,7 +407,7 @@ async function updateProduct(req, res) {
       {
         name,description,category,subCategory,brand,color,size,numSize,footSize,
         quantity,stock,discountPrice,
-        basePrice,finalPrice,active,
+        basePrice,finalPrice,active,productDetails,
         images: updatedImages },
       { new: true }
     );
