@@ -152,6 +152,7 @@ const productValidationSchema = Joi.object({
     }),
   images: Joi.array().items(Joi.string()),
   active: Joi.boolean().default(true),
+  productDetails:Joi.string().optional()
 });
 
 
