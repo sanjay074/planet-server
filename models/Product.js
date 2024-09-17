@@ -10,7 +10,7 @@ const productSchema = mongoose.Schema(
     description:{
       type: String,
       required: [true, "Product description is required"],
-      trim: true,
+      
     },
     category:{
       type: mongoose.Schema.Types.ObjectId,
