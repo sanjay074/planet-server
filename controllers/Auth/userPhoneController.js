@@ -19,14 +19,14 @@ const  registrationUser = async (req, res) => {
      }
      const hashedPassword = await bcrypt.hash(password, 10);
      const newUser = new users({
-         firstName,
+         firstName,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
          lastName,
          email,
          password:hashedPassword
      })
      const saveUserData = await newUser.save();
      res.status(200).json({success:1, message:"User registration is sucessfully"});
- 
+
     }catch(error){
 
      return res.status(500).json({
