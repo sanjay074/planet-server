@@ -10,7 +10,7 @@ const productSchema = mongoose.Schema(
     description:{
       type: String,
       required: [true, "Product description is required"],
-      trim: true,
+      
     },
     category:{
       type: mongoose.Schema.Types.ObjectId,
@@ -44,7 +44,6 @@ const productSchema = mongoose.Schema(
       type:[String],
       enum:["1","2","3","4","5","6","7","8","9","10","11","12"]
     },
-
     quantity:{
       type: Number,
       required: [true, "Product quantity is required"],
@@ -88,6 +87,9 @@ const productSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    productDetails:{
+      type:String
+    }
   },
   { timestamps: true }
 );

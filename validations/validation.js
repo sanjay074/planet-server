@@ -152,6 +152,7 @@ const productValidationSchema = Joi.object({
     }),
   images: Joi.array().items(Joi.string()),
   active: Joi.boolean().default(true),
+  productDetails:Joi.string().optional()
 });
 
 
@@ -376,7 +377,7 @@ const passwordSchema = Joi.string()
     'any.required': 'Password is required.'
   })
 
-  const UserLoginSchema = Joi.object({
+const UserLoginSchema = Joi.object({
     email: Joi.string().email().required().messages({
       "string.email": "Please provide a valid email address",
       "any.required": "Email is required",
@@ -402,6 +403,7 @@ const userValidationSchema = Joi.object({
     "string.max": "Last name should have at most 30 characters",
     "any.required": "Last name is required",
   }),
+  
   email: Joi.string().email().required().messages({
     "string.email": "Please provide a valid email address",
     "any.required": "Email is required",
