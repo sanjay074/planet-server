@@ -16,6 +16,9 @@ lastName:{
   password:{
     type:String
 },
+refreshToken:{
+  type:String
+}
 },{timestamps:true})
 
   
