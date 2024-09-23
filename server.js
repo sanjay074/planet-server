@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require('mongoose');
+const cookieParser = require("cookie-parser");
 const cors  =require("cors") 
 const app = express();
 require("dotenv").config();
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 app.use(helmet());
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser())
 app.use(express.static("public"));
 app.use("/public", express.static("public"));
 app.use("/api/v1", Router);

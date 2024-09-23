@@ -130,41 +130,45 @@ const similarProducts = async (req, res) => {
       return res.status(400).json({ status: 0, message: "Product not found" });
     }
 
-    // Prioritize exact matches first (category, subCategory, brand)
-    let similarProducts = await Product.find({
-      category: product.category._id,
-      subCategory: product.subCategory._id,
-      brand: product.brand._id,
-      _id: { $ne: product._id },
-    }).limit(10);
+    // Initialize the query object
+    let query = { _id: { $ne: product._id } };
 
-    // If less than 10 results, fallback to partial matches
+    // Add filters dynamically based on available fields
+    if (product.category) query.category = product.category._id;
+    if (product.subCategory) query.subCategory = product.subCategory._id;
+    if (product.brand) query.brand = product.brand._id;
+
+    // Find similar products based on the available filters
+    let similarProducts = await Product.find(query).limit(10);
+
+    // If less than 10 results, fallback to broader queries
     if (similarProducts.length < 10) {
       const remainingLimit = 10 - similarProducts.length;
 
-      // Partial match: category and subCategory only
-      const partialSubCategoryMatches = await Product.find({
-        category: product.category._id,
-        subCategory: product.subCategory._id,
-        _id: { $ne: product._id },
-        _id: { $nin: similarProducts.map(p => p._id) }, 
-      }).limit(remainingLimit);
+      // Partial match: category and subCategory (if both exist)
+      if (product.category && product.subCategory) {
+        const partialSubCategoryMatches = await Product.find({
+          category: product.category._id,
+          subCategory: product.subCategory._id,
+          _id: { $ne: product._id },
+          _id: { $nin: similarProducts.map((p) => p._id) },
+        }).limit(remainingLimit);
 
-      similarProducts = similarProducts.concat(partialSubCategoryMatches);
-    }
+        similarProducts = similarProducts.concat(partialSubCategoryMatches);
+      }
 
-    // If still less than 10 results, fallback to just subCategory matches
-    if (similarProducts.length < 10) {
-      const remainingLimit = 10 - similarProducts.length;
+      // If still less than 10 results, fallback to just subCategory matches
+      if (similarProducts.length < 10 && product.subCategory) {
+        const remainingLimit = 10 - similarProducts.length;
 
-      // Partial match: subCategory only
-      const partialCategoryMatches = await Product.find({
-        subCategory: product.subCategory._id,
-        _id: { $ne: product._id },
-        _id: { $nin: similarProducts.map(p => p._id) }, // Exclude already found products
-      }).limit(remainingLimit);
+        const partialCategoryMatches = await Product.find({
+          subCategory: product.subCategory._id,
+          _id: { $ne: product._id },
+          _id: { $nin: similarProducts.map((p) => p._id) },
+        }).limit(remainingLimit);
 
-      similarProducts = similarProducts.concat(partialCategoryMatches);
+        similarProducts = similarProducts.concat(partialCategoryMatches);
+      }
     }
 
     return res.json({
@@ -176,6 +180,7 @@ const similarProducts = async (req, res) => {
     return res.status(500).json({ message: error.message.toString() });
   }
 };
+
 
 
 

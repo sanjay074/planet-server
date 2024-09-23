@@ -149,7 +149,7 @@ async function getAllProfileController(req,res){
 const getUserProfile = async (req,res)=>{
   try{
     const userId = req.userId;
-    const userData = await Users.findById(userId);
+    const userData = await Users.findById(userId).select("-password -refreshToken");
     return res.status(200).json({
        status:true,
        message:"Get user details successfully",
