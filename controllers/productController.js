@@ -108,7 +108,7 @@ const createProduct = async (req, res) => {
   }
 };
 
-const similarProducts = async (req,res)=>{
+const similarProducts = async (req, res) => {
   try {
     const productId = req.params._id;
     if (!isValidObjectId(productId)) {
@@ -118,27 +118,64 @@ const similarProducts = async (req,res)=>{
           "Invalid product ID format. Please provide a valid MongoDB ObjectId.",
       });
     }
+
+    // Find the original product
     const product = await Product.findById(productId).populate([
       "category",
       "subCategory",
-      "brand"
+      "brand",
     ]);
 
     if (!product) {
-      return res.status(400).json({status:0,message: "Product not found"});
+      return res.status(400).json({ status: 0, message: "Product not found" });
     }
-    const similarProducts = await Product.find({
+
+    // Prioritize exact matches first (category, subCategory, brand)
+    let similarProducts = await Product.find({
       category: product.category._id,
       subCategory: product.subCategory._id,
       brand: product.brand._id,
-      _id: { $ne: product._id }, 
-    }).limit(10); 
+      _id: { $ne: product._id },
+    }).limit(10);
 
-    return res.json({status:1, message:"Get Similar Products by ID ",similarProducts });
+    // If less than 10 results, fallback to partial matches
+    if (similarProducts.length < 10) {
+      const remainingLimit = 10 - similarProducts.length;
+
+      // Partial match: category and subCategory only
+      const partialSubCategoryMatches = await Product.find({
+        category: product.category._id,
+        subCategory: product.subCategory._id,
+        _id: { $ne: product._id },
+        _id: { $nin: similarProducts.map(p => p._id) }, 
+      }).limit(remainingLimit);
+
+      similarProducts = similarProducts.concat(partialSubCategoryMatches);
+    }
+
+    // If still less than 10 results, fallback to just subCategory matches
+    if (similarProducts.length < 10) {
+      const remainingLimit = 10 - similarProducts.length;
+
+      // Partial match: subCategory only
+      const partialCategoryMatches = await Product.find({
+        subCategory: product.subCategory._id,
+        _id: { $ne: product._id },
+        _id: { $nin: similarProducts.map(p => p._id) }, // Exclude already found products
+      }).limit(remainingLimit);
+
+      similarProducts = similarProducts.concat(partialCategoryMatches);
+    }
+
+    return res.json({
+      status: 1,
+      message: "Get Similar Products by ID",
+      similarProducts,
+    });
   } catch (error) {
-   return res.status(500).json({ message: error.message.toString() });
+    return res.status(500).json({ message: error.message.toString() });
   }
-} 
+};
 
 
 
