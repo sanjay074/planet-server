@@ -118,12 +118,22 @@ const  registrationUser = async (req, res) => {
   
    const Logout = async (req, res) => {
     try {
-      res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: true, 
-        sameSite: 'strict',
-      });
-      const { refreshToken } = req.cookies;
+      let refreshToken;
+      if (req.cookies && req.cookies.refreshToken) {
+        refreshToken = req.cookies.refreshToken;
+        res.clearCookie('refreshToken', {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'strict',
+        });
+      } else if (req.body.refreshToken) {
+        refreshToken = req.body.refreshToken;
+      } else {
+        return res.status(400).json({
+          success: 0,
+          message: 'No refresh token provided',
+        });
+      }
       await users.updateOne(
         { refreshToken: refreshToken },
         { $unset: { refreshToken: "" } }
@@ -137,6 +147,7 @@ const  registrationUser = async (req, res) => {
       });
     }
   };
+  
   
      
    

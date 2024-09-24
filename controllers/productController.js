@@ -183,7 +183,6 @@ const similarProducts = async (req, res) => {
 
 
 
-
 async function getProduct(req, res) {
   try {
     const {
