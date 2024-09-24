@@ -144,7 +144,7 @@ const getmyOrder = async (req, res) => {
       .populate('orderItems.productId')
       .populate({
         path: 'orderItems.productId',
-        select: "name color brand  images -_id"
+        select: "-brand -subCategory -category-_id -size -numSize -quantity -createdAt -updatedAt -footSize"
       });
      
 
