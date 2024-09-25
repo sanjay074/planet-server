@@ -298,9 +298,10 @@ const deletePaymentType = async (req,res)=>{
             message: error.details[0].message
           });
         }
+        const id = req.userId;
        const { beneficiaryName,accountNum,accountIFSC,bankName,payoutsRef,remarks,amount,narration} = req.body;
        const vendor = new VendorPayOut ({
-          beneficiaryName,accountIFSC,accountNum,amount,payoutsRef,remarks,bankName,narration
+          beneficiaryName,accountIFSC,accountNum,amount,payoutsRef,remarks,bankName,narration,userId:id
        })
        const savedata = await vendor.save();
        return res.status(201).json({
@@ -318,7 +319,7 @@ const deletePaymentType = async (req,res)=>{
 
 const getAllVendorPayOuts = async (req, res) => {
   try {
-    const vendorPayOuts = await VendorPayOut.find();
+    const vendorPayOuts = await VendorPayOut.find().populate("userId" ,"firstName");
     if (vendorPayOuts.length === 0) {
       return res.status(404).json({
         success: 0,

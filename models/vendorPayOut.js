@@ -1,5 +1,10 @@
 const  mongoose  = require("mongoose");
 const  vendorPayOutSchema =  mongoose.Schema({
+   userId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"users",
+    required:true
+},
   beneficiaryName:{
     type:String,
     required:true
