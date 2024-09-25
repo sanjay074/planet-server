@@ -413,6 +413,43 @@ const userValidationSchema = Joi.object({
 });
 
 
+const vendorPayOutValidation = Joi.object({
+  beneficiaryName: Joi.string().required().messages({
+    'string.base': 'Beneficiary Name should be a string.',
+    'any.required': 'Beneficiary Name is required.',
+  }),
+  accountNum: Joi.string().required().messages({
+    'string.base': 'Account Number should be a string.',
+    'any.required': 'Account Number is required.',
+  }),
+  accountIFSC: Joi.string().pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/).required().messages({
+    'string.pattern.base': 'Account IFSC should be a valid 11-character code (e.g., SBIN0001234).',
+    'any.required': 'Account IFSC is required.',
+  }),
+  bankName: Joi.string().required().messages({
+    'string.base': 'Bank Name should be a string.',
+    'any.required': 'Bank Name is required.',
+  }),
+  payoutsRef: Joi.string().required().messages({
+    'string.base': 'Payouts Reference should be a string.',
+    'any.required': 'Payouts Reference is required.',
+  }),
+  remarks: Joi.string().required().messages({
+    'string.base': 'Remarks should be a string.',
+    'any.required': 'Remarks are required.',
+  }),
+  amount: Joi.number().required().messages({
+    'string.base': 'Amount should be a number.',
+    'any.required': 'Amount is required.',
+  }),
+  narration: Joi.string().optional().messages({
+    'string.base': 'Narration should be a string.',
+  }),
+});
+
+
+
+
 
 
 
@@ -441,5 +478,6 @@ module.exports = {
   offerValidationSchema,
   oneOrderSummarySchema,
   userValidationSchema,
-  UserLoginSchema
+  UserLoginSchema,
+  vendorPayOutValidation
 };
