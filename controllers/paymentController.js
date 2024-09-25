@@ -1,5 +1,6 @@
 const Payment = require("../models/payment");
-const {paymentSchema} = require("../validations/validation");
+const VendorPayOut = require("../models/vendorPayOut");
+const {paymentSchema,vendorPayOutValidation} = require("../validations/validation");
 const cloudinary = require("cloudinary").v2;
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require("mongoose");
@@ -288,7 +289,58 @@ const deletePaymentType = async (req,res)=>{
     
   }
 
+  const vendorPayOut = async (req,res)=>{
+    try{
+        const { error } = vendorPayOutValidation.validate(req.body);
+        if (error) {
+          return res.status(400).send({
+            success: 0,
+            message: error.details[0].message
+          });
+        }
+       const { beneficiaryName,accountNum,accountIFSC,bankName,payoutsRef,remarks,amount,narration} = req.body;
+       const vendor = new VendorPayOut ({
+          beneficiaryName,accountIFSC,accountNum,amount,payoutsRef,remarks,bankName,narration
+       })
+       const savedata = await vendor.save();
+       return res.status(201).json({
+        success: 1,
+        message: "VendorPayOut added successfully"
+    });
+    }catch(error){
+        return res.status(500).json({
+            success: 0,
+            message: error.message.toString(),
+        });
+    }
+}
+
+
+const getAllVendorPayOuts = async (req, res) => {
+  try {
+    const vendorPayOuts = await VendorPayOut.find();
+    if (vendorPayOuts.length === 0) {
+      return res.status(404).json({
+        success: 0,
+        message: "No vendor payouts found",
+      });
+    }
+    return res.status(200).json({
+      success: 1,
+      message: "Vendor payouts fetched successfully",
+      vendorPayOuts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: 0,
+      message: error.message,
+    });
+  }
+};
+
+
 
 module.exports = {
-  paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode,paymentHistory,validateQrcode
+  paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode,
+  paymentHistory,validateQrcode,vendorPayOut,getAllVendorPayOuts
 }
