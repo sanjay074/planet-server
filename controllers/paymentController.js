@@ -346,28 +346,30 @@ const payoutWebhook = async (req, res) => {
     const { event, status, data } = req.body;
     if (event === 'TRANSFER_STATUS_UPDATE' && status === 'success') {
         try {
-            const payout = new Payout({
-                amount: data.amount,
-                remarks: data.remarks,
-                payment_mode: data.payment_mode,
-                transfer_date: new Date(data.transfer_date),
-                beneficiary_bank_name: data.beneficiary_bank_name,
-                payout_id: data.payout_id,
-                beneficiary_account_ifsc: data.beneficiary_account_ifsc,
-                beneficiary_account_name: data.beneficiary_account_name,
-                beneficiary_account_number: data.beneficiary_account_number,
-                beneficiary_upi_handle: data.beneficiary_upi_handle || null,
-                UTR: data.UTR
-            });
-            await payout.save();
+          console.log("payoutWebhook",data);
+          
+            // const payout = new Payout({
+            //     amount: data.amount,
+            //     remarks: data.remarks,
+            //     payment_mode: data.payment_mode,
+            //     transfer_date: new Date(data.transfer_date),
+            //     beneficiary_bank_name: data.beneficiary_bank_name,
+            //     payout_id: data.payout_id,
+            //     beneficiary_account_ifsc: data.beneficiary_account_ifsc,
+            //     beneficiary_account_name: data.beneficiary_account_name,
+            //     beneficiary_account_number: data.beneficiary_account_number,
+            //     beneficiary_upi_handle: data.beneficiary_upi_handle || null,
+            //     UTR: data.UTR
+            // });
+            // await payout.save();
             return res.status(200).json({
                 status: 'success',
                 message: 'data received'
             });
         } catch (error) {
             return res.status(500).json({
-                status: 'error',
-                message: 'Error saving data to database'
+                status: 'Failed',
+                message: error.toString()
             });
         }
     } 
