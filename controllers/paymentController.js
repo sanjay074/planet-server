@@ -9,6 +9,7 @@ const QRCode = require('qrcode');
 const PaymentHistory = require("../models/paymentHistory");
 const Payout = require("../models/payOut");
 const Order= require("../models/Order");
+const axios = require("axios");
 const generateTransactionId = () => {
   const prefix = 'T';
   const timestamp = Date.now().toString();
@@ -262,6 +263,9 @@ const deletePaymentType = async (req,res)=>{
 }
 
 
+
+
+
   const getPaymentType = async (req,res)=>{
     try{
       const Id = req.params.id;
@@ -289,6 +293,53 @@ const deletePaymentType = async (req,res)=>{
     }
     
   }
+
+
+
+
+const vendorPayOutV2 = async (req, res) => {
+    try {
+        const { userId, beneficiaryName, accountNum, accountIFSC, bankName, amount, remarks, narration,reference } = req.body;
+        const payoutPayload = {
+            account_number: accountNum,
+            account_ifsc: accountIFSC,
+            bankname: bankName,
+            confirm_acc_number: accountNum,
+            requesttype: "IMPS",
+            beneficiary_name: beneficiaryName,
+            amount: amount.toString(),
+            narration: narration || "Payout Transaction",
+            reference: reference
+        };
+        const keplerResponse = await axios.post(process.env.payout_url, payoutPayload, {
+            headers: {
+                "x-client-id":process.env.client_id,
+                "x-client-secret":process.env.client_secret,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const responseData = keplerResponse.data;
+        const newPayout = new VendorPayOut({
+            userId,
+            beneficiaryName,
+            accountNum,
+            accountIFSC,
+            bankName,
+            payoutsRef: responseData.reference, 
+            remarks,
+            amount,
+            narration: narration || "Payout Transaction"
+        });
+
+        await newPayout.save();
+
+        res.status(200).json({status:1, message: "Payout initiated successfully", data: responseData });
+    } catch (error) {
+        res.status(500).json({status:0, message: "Payout initiation failed", error:error.message });
+    }
+  }
+
 
   const vendorPayOut = async (req,res)=>{
     try{
@@ -383,10 +434,7 @@ const payoutWebhook = async (req, res) => {
 
 
 
-
-
-
 module.exports = {
   paymentType,getAllPaymentType,deletePaymentType,getPaymentType,generateUpiQrcode,
-  paymentHistory,validateQrcode,vendorPayOut,getAllVendorPayOuts,payoutWebhook
+  paymentHistory,validateQrcode,vendorPayOut,getAllVendorPayOuts,payoutWebhook,vendorPayOutV2
 }

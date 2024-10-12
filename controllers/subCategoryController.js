@@ -1,4 +1,3 @@
-const { object } = require("joi");
 const SubCategory = require("../models/SubCategory");
 const { subCategoryValidationSchema } = require("../validations/validation");
 const mongoose = require("mongoose");
@@ -9,26 +8,33 @@ async function createSubCategory(req, res) {
     const data = req.body;
     const { error } = subCategoryValidationSchema.validate(data);
     if (error) {
-      res.status(400).json({ message: error.details[0].message });
+      return res.status(400).json({ message: error.details[0].message });
     }
-    //check if the brand name already exists
-    const existingSubCategory = await SubCategory.findOne({ name: data.name });
+    const existingSubCategory = await SubCategory.findOne({
+      name: data.name,
+      category: data.category,
+    });
+
     if (existingSubCategory) {
       return res
         .status(400)
-        .json({ success: false, message: "SubCategory name already exists" });
+        .json({ success: false, message: "SubCategory with this name and category already exists" });
     }
-    const newSubCategory = await new SubCategory(data);
+
+    const newSubCategory = new SubCategory(data);
     const response = await newSubCategory.save();
+
     res.status(201).json({
       success: true,
-      message: "subCategory Created Successfully",
-      record: response,
+      message: "SubCategory Created Successfully"
     });
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
+
 
 
 
