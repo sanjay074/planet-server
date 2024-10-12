@@ -1,7 +1,7 @@
 const express =require("express")
 const {paymentType,getAllPaymentType,deletePaymentType,getPaymentType,
     getAllVendorPayOuts,vendorPayOut,generateUpiQrcode, 
-    paymentHistory,validateQrcode,payoutWebhook}=require("../controllers/paymentController");
+    paymentHistory,validateQrcode,payoutWebhook,vendorPayOutV2}=require("../controllers/paymentController");
 const {authMiddleware,isAdminMd}  =require("../middleware/authMiddle")
 const {upload} = require("../middleware/singleFileUpload")
 const paymentRoute =express.Router()
@@ -13,6 +13,7 @@ paymentRoute.post("/generateUpiQrcode",generateUpiQrcode);
 paymentRoute.post("/utrVerify",authMiddleware,paymentHistory);
 paymentRoute.post("/validateQr",validateQrcode);
 paymentRoute.post("/vendorPayOut",authMiddleware,vendorPayOut);
+paymentRoute.post("/vendorPayOut/v2",vendorPayOutV2);
 paymentRoute.post("/payout/webhook",payoutWebhook);
 paymentRoute.get("/getVendorPayOuts",authMiddleware,isAdminMd,getAllVendorPayOuts)
 module.exports =paymentRoute ;

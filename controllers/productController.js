@@ -675,6 +675,26 @@ async function getoutofStock(req,res){
 }
 
 
+const getDiscountedProducts = async (req, res) => {
+  try {
+    const discountedProducts = await Product.find({
+      discountPrice: { $eq: 30 }
+    });
+
+    res.status(200).json({
+      success: true,
+      data: discountedProducts,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve discounted products',
+      error: error.message,
+    });
+  }
+};
+
+
 
 module.exports = {
   createProduct,
@@ -687,5 +707,6 @@ module.exports = {
   getMensNewArrival,
   getWomenNewArrival,
    similarProducts,
-  getoutofStock
+  getoutofStock,
+  getDiscountedProducts
 };
